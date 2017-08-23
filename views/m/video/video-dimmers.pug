@@ -7,3 +7,13 @@
 .ui.dimmer#dimmer-error
     .content
         p 在获取视频信息时碰到了错误，请稍后回来查看……
+.ui.dimmer#dimmer-video-grade(style='z-index: 1500;')
+    .content(style='position: relative;')
+        img.center-block(ng-src='{{videoStatus.score >= 30 ? "//resource.buzzbuzzenglish.com/video-grade-success.png" : "//resource.buzzbuzzenglish.com/video-grade-fail.png"}}', style='width: 80%; padding-top: 3rem;')
+        .tips(style='position: absolute; top: 5rem; margin: 0 auto; width: 100%; color: #333;')
+            p(style='font-family:"HYxindipaofu"; font-size: 30px; font-weight: 600;', ng-cloak) {{videoStatus.score >= 30 ? 'Great!!' : 'oh! no!'}}
+            p(style='font-family:"HYxindipaofu"; font-size: 20px; font-weight: 600;', ng-cloak) {{videoStatus.score >= 30 ? '你的读音正确率达到了' : '你的读音正确率只有'}}
+            p(style='font-family:"HYxindipaofu"; font-size: 40px; font-weight: 800;', ng-cloak) {{videoStatus.score}}%
+        .grade-button.center-block(ng-click='closeVideoGrade()', style='width: 50%; position: relative; height: 70px;')
+            img(src='//resource.buzzbuzzenglish.com/video-grade-button.png', style='height: 100%;')
+            .tips(style='position: absolute; top: 0; width: 100%; color: #333; height: 100%; text-align: center; line-height: 70px; font-family:"HYxindipaofu"; font-size: 20px; font-weight: 600;', ng-cloak) {{videoStatus.score >= 30 ? '朕已阅' : '重新录制'}}
