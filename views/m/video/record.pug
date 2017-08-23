@@ -8,7 +8,7 @@ script(type="text/ng-template", id="video.html")
                     .subtitle-label(style='font-family:"HYxindipaofu"; color: #888;') 请记住以下内容:
                     .subtitle-english(style='padding-top: 1rem;') {{formData.subtitle || 'Today is monday.'}}
                     .subtitle-change(style='display: flex; justify-content: flex-end; margin-top: 1rem;', ng-if='changeDialogueTag')
-                        .ui.mini.button(style='padding: .5em;', ng-click='changeDialogue()')  换一句
+                        .ui.mini.button(style='padding: .5em; font-size: 1.5rem;', ng-click='changeDialogue()')  换一句
                     .ui.segment(style='margin-top: 8rem; font-family:"HYxindipaofu"; font-size: 16px; color: #aaa; padding: .5em 1em;') PS: 请在录制时说出这句"台词", 时长不超过30秒
                 .form-group
                     button.ui.yellow.button.center-block(style='font-size: 2rem; border-radius: 0; letter-spacing: 3px; position: relative; font-family:"HYxindipaofu"') 我记住了,开始录制
