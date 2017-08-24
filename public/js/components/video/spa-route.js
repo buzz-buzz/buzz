@@ -218,6 +218,7 @@ angular.module('spaModule')
             $scope.hideVideo = true;
         }
 
+<<<<<<< HEAD
         function hideError() {
             $('#dimmer-error').dimmer('hide');
             $scope.hideVideo = false;
@@ -269,6 +270,27 @@ angular.module('spaModule')
         $scope.closeVideoGrade = function () {
             if ($scope.videoStatus.score > 30) {
                 hideGoodScoreDimmer();
+=======
+        videoStatus.get(atob($routeParams.src)).then(function (status) {
+            $scope.videoStatus = status;
+            if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
+                $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
+                document.getElementById('video-uploaded').style.opacity = '0';
+                $('#dimmer-video-grade').dimmer('show');
+            }
+        }).catch(function (reason) {
+            if (reason === 'processing') {
+                showProcessing();
+            } else {
+                showError();
+            }
+        });
+
+        $scope.closeVideoGrade = function () {
+            if ($scope.videoStatus.score > 30) {
+                $('#dimmer-video-grade').dimmer('hide');
+                document.getElementById('video-uploaded').style.opacity = '1';
+>>>>>>> Use cartoonized video first
             } else {
                 $location.path('/video');
             }
