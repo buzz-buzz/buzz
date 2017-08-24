@@ -1,8 +1,8 @@
 script(type="text/ng-template", id="video-list.html")
-    .ui.container
-        .ui.two.cards(style='margin-top: .5em;')
-            .card(ng-repeat='v in videos')
+    .ui.container(style='padding: 0;')
+        .ui.two.cards(style='margin-top: .5em; padding: .5rem;')
+            .card(ng-repeat='v in videos', style='width: calc(50% - 1em); margin-left: .5em; margin-right: .5em;')
                 a.img(ng-href="/video-player/{{v.url}}")
                     img(src='//resource.buzzbuzzenglish.com/image/png/buzz-poster.png')
-                .extra(style='background-color: #eee;') {{v.mtime.substr(0, 10) + ' 上传'}}
+                .extra(style='background-color: #eee; font-size: 1rem;') {{v.mtime.substr(0, 19).replace('T',' ')}}
                     .ui.star.rating(data-rating="4")
