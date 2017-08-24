@@ -15,6 +15,11 @@ function getScorePath(videoStoredPath) {
     return `${parsed.dir}${path.sep}${parsed.name}.score`;
 }
 
+function getCartoonizedPath(videoPath) {
+    let parsed = path.parse(videoPath);
+    return `${parsed.dir}${path.sep}c-${parsed.name}.mp4`;
+}
+
 function getExpectedVttStoredPath(videoPath) {
     let parsed = path.parse(videoPath);
     return `${parsed.dir}${path.sep}exp-${parsed.name}.vtt`;
@@ -94,6 +99,7 @@ ${dialog}
         let expVttPath = getExpectedVttStoredPath(videoStoredPath);
         let vttPath = getVttStoredPath(videoStoredPath);
         let scorePath = getScorePath(videoStoredPath);
+        let cartoonizedPath = getCartoonizedPath(videoStoredPath);
 
         let result = {
             status: 'done',
@@ -101,6 +107,10 @@ ${dialog}
             vtt: getURIAddress(expVttPath),
             actualVtt: getURIAddress(vttPath)
         };
+
+        if (fs.existsSync(cartoonizedPath)) {
+            result.cartoonized = getURIAddress(cartoonizedPath);
+        }
 
         if (!fs.existsSync(expVttPath)) {
             result.status = 'nosub';

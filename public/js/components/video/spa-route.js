@@ -47,10 +47,6 @@ angular.module('spaModule')
         });
     }])
     .factory('videoStatus', ['$http', '$q', '$sce', function ($http, $q, $sce) {
-        function callProcess(videoSrc) {
-            $http.post('/api/videos/' + videoSrc);
-        }
-
         return {
             get: function (encodedVideoSrc) {
                 var decoded = decodeURIComponent(encodedVideoSrc);
@@ -183,8 +179,7 @@ angular.module('spaModule')
                 if (dialogueList.data.length > 1) {
                     $scope.changeDialogueTag = true;
                 }
-            })
-        ;
+            });
     }])
     .controller('videoPreviewCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout) {
         $scope.videoSrc = decodeURIComponent($routeParams.src);
@@ -219,12 +214,8 @@ angular.module('spaModule')
         }
 
         videoStatus.get(atob($routeParams.src)).then(function (status) {
-            console.log('-------status-------');
             $scope.videoStatus = status;
-            $scope.config = status.videoConfig;
             if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
-                //显示分数
-                console.log('-------score-------');
                 $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
                 document.getElementById('video-uploaded').style.opacity = '0';
                 $('#dimmer-video-grade').dimmer('show');
@@ -238,8 +229,7 @@ angular.module('spaModule')
         });
 
         $scope.closeVideoGrade = function () {
-            //大于30 关闭modal  小于30 重新录制
-            if ($scope.videoStatus.score >= 30) {
+            if ($scope.videoStatus.score > 30) {
                 $('#dimmer-video-grade').dimmer('hide');
                 document.getElementById('video-uploaded').style.opacity = '1';
             } else {
@@ -347,5 +337,4 @@ angular.module('spaModule')
         $scope.playVideo = function () {
             $location.path('/video');
         };
-    }])
-;
+    }]);
