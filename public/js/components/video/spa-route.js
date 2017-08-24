@@ -55,7 +55,7 @@ angular.module('spaModule')
                     .then(function (result) {
                         var status = result.data;
                         //status.score = 0.9;
-                        //status.status = 'done';
+                        // status.status = 'done'; 
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
