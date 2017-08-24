@@ -2,7 +2,8 @@ script(type="text/ng-template", id="video-preview.html")
     form.ui.form(ng-class="{'error': !!errorMessage, 'loading': uploading}", style='padding: 0 15px; margin: 1rem; font-family:"HYxindipaofu"')
         .title(style='font-size: 30px; margin: 1rem 0; font-family:"HYxindipaofu"; font-weight: 800;') level 1 闯关成功!
         p(style='font-size: 20px; margin: 1rem 0; font-family:"HYxindipaofu"') 以下是您录制的视频 :
-        video#video-player(style="width: 100%; max-height: 250px;", controls="controls", autoplay, ng-src='{{videoSrc}}', type="video/*", poster="//resource.buzzbuzzenglish.com/image/png/buzz-poster.png", preload, crossorigin="Anonymous")
+        div(ng-controller="jwPlayerCtrl")
+            video#video-player(style="width: 100%; max-height: 250px;", controls="controls", ng-src='{{videoSrc}}', type="video/*", poster="//resource.buzzbuzzenglish.com/image/png/buzz-poster.png", preload, crossorigin="Anonymous")
         .ui.submit-div(style='position: relative; margin-top: 2rem;')
             button.btn.btn-block(style='display: inline-block; width: 45%; margin-top: 0; background-color: #f7b52a; color: #fff;', ng-click='sureUpload()')
                 i.upload.icon
