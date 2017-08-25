@@ -256,6 +256,8 @@ angular.module('spaModule')
         $scope.gotoVideoRecord = function () {
             $location.path('/video');
         };
+
+        console.log($location.path());
     }])
     .controller('videoShareCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', '$q', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, $q) {
         $scope.closeDimmer = function () {
@@ -291,12 +293,10 @@ angular.module('spaModule')
 
         function wechatSharable(sharable) {
             try {
-                console.log("CTRL");
                 $rootScope.wechatSharable.desc = sharable.desc;
                 $rootScope.wechatSharable.title = sharable.title;
 
                 wxReady().then(function () {
-
                     wx.onMenuShareTimeline(angular.extend({}, $rootScope.wechatSharable, {
                         title: $rootScope.wechatSharable.title + ' ' + $rootScope.wechatSharable.desc
                     }));

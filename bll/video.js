@@ -17,7 +17,7 @@ function getScorePath(videoStoredPath) {
 
 function getCartoonizedPath(videoPath) {
     let parsed = path.parse(videoPath);
-    return `${parsed.dir}${path.sep}c-${parsed.name}.mp4`;
+    return `${parsed.dir}${path.sep}c-${parsed.base}`;
 }
 
 function getExpectedVttStoredPath(videoPath) {
@@ -84,15 +84,13 @@ module.exports = {
     },
 
     generateVtt: function (vttPath, dialog) {
-        dialog = dialog || 'I like drawing, and walking in nature';
-        let vtt = `WEBVTT FILE
+        let vtt = `WEBVTT
 
-1
 00:00:00.000 --> 00:00:10.375
 ${dialog}
 
 `;
-        fs.writeFile(vttPath, 'WEBVTT FILE\n\n' + vtt, function () {});
+        fs.writeFile(vttPath, vtt, 'utf-8', function () {});
     },
 
     getStatusInfo: function (videoStoredPath) {
@@ -145,22 +143,6 @@ ${dialog}
             method: 'POST',
             data: {
                 videoPath: videoPath
-            }
-        });
-    },
-
-    asyncApplyProcess: function (videoStoredPath, srtStoredPath, finalPath) {
-        srtStoredPath = srtStoredPath || getSubtitleStoredPath(videoStoredPath);
-        finalPath = finalPath || getSubtitledVideoPath(videoStoredPath)._;
-        asyncProxy({
-            host: config.hongda.host,
-            port: config.hongda.port,
-            path: '/burn_subtitle',
-            method: 'POST',
-            data: {
-                srtPath: srtStoredPath,
-                videoPath: videoStoredPath,
-                outputPath: finalPath
             }
         });
     }
