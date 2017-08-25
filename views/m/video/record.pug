@@ -4,12 +4,18 @@ script(type="text/ng-template", id="video.html")
         fieldset
             legend(style='text-align: center; font-size: 40px; padding-top: 2rem; border: none; margin-bottom: 0; font-family:"HYxindipaofu"; font-weight: 800;') level 1
             .ui.container
-                .subtitle(style='border: 10px solid #f7b52a; background-color: #fff; min-height: 25rem; padding: 1rem;')
-                    .subtitle-label(style='font-family:"HYxindipaofu"; color: #888;') 请记住以下内容:
+                .subtitle(style='border: 10px solid #f7b52a; background-color: #fff; min-height: 30rem; padding: 1rem; position: relative;')
+                    .subtitle-label(style='font-family:"HYxindipaofu"; color: #888; margin-bottom: 1em;') 请记住以下内容:
                     .subtitle-english(style='padding-top: 1rem;') {{formData.subtitle || 'Today is monday.'}}
-                    .subtitle-change(style='display: flex; justify-content: flex-end; margin-top: 1rem;', ng-if='changeDialogueTag')
-                        .ui.mini.button(style='padding: .5em; font-size: 1.5rem;', ng-click='changeDialogue()')  换一句
-                    .ui.segment(style='margin-top: 8rem; font-family:"HYxindipaofu"; font-size: 16px; color: #aaa; padding: .5em 1em;') PS: 请在录制时说出这句"台词", 时长不超过30秒
+                    .subtitle-change(style='display: flex; justify-content: center; margin-top: 1rem;', ng-if='changeDialogueTag')
+                        .ui.mini.button(style='padding: .5em; font-size: 1.5rem; color: white; background-color: #f7b52a;', ng-click='changeDialogue()')
+                            i.random.icon
+                            span 换一换
+                    .tips-bottom(style='position: absolute; right: 0; bottom: 1em; font-weight: 800; font-size: .8em;')
+                        p PS: 请在录制时说出这句'台词' ,
+                        span 时长不超过
+                        span(style='font-size: 1.5em; color: red;') 30
+                        span 秒
                 .form-group
                     button.ui.yellow.button.center-block(style='font-size: 2rem; border-radius: 0; letter-spacing: 3px; position: relative; font-family:"HYxindipaofu"') 我记住了,开始录制
                         input#video-file.form-control(type="file", accept="video/*", capture="camcorder", style='position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0;', onchange="angular.element(this).scope().videoChange()")
