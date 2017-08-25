@@ -54,8 +54,6 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
-                        //status.score = 0.9;
-                        // status.status = 'done'; 
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -225,20 +223,38 @@ angular.module('spaModule')
             $scope.hideVideo = false;
         }
 
+        function showGoodScoreDimmer() {
+            $timeout(function () {
+                $('#dimmer-good-score').dimmer('show');
+                $scope.hideVideo = true;
+            }, 100);
+        }
+
+        function hideGoodScoreDimmer() {
+            $('#dimmer-good-score').dimmer('hide');
+            $scope.hideVideo = false;
+        }
+
+        function showBadScoreDimmer() {
+            $('#dimmer-bad-score').dimmer({closable: true}).dimmer('show');
+            $scope.hideVideo = true;
+        }
+
         function getVideoStatus() {
             $scope.loading = true;
             videoStatus.get(atob($routeParams.src)).then(function (status) {
+                hideProcessing();
+                hideError();
+
                 $scope.videoStatus = status;
                 if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
                     $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
-                    document.getElementById('video-uploaded').style.opacity = '0';
-                    $('#dimmer-video-grade').dimmer({
-                        closable: false
-                    }).dimmer('show');
+                    if ($scope.videoStatus.score > 30) {
+                        showGoodScoreDimmer();
+                    } else {
+                        showBadScoreDimmer();
+                    }
                 }
-
-                hideProcessing();
-                hideError();
             }).catch(function (reason) {
                 if (reason === 'processing') {
                     showProcessing();
@@ -252,8 +268,7 @@ angular.module('spaModule')
 
         $scope.closeVideoGrade = function () {
             if ($scope.videoStatus.score > 30) {
-                $('#dimmer-video-grade').dimmer('hide');
-                document.getElementById('video-uploaded').style.opacity = '1';
+                hideGoodScoreDimmer();
             } else {
                 $location.path('/video');
             }
@@ -279,8 +294,16 @@ angular.module('spaModule')
         $scope.refreshStatus = getVideoStatus;
 
         $timeout(function () {
-          getVideoStatus()
+            getVideoStatus()
         }, 15000);
+
+        $scope.$watch('hideVideo', function (newVal, oldVal) {
+            if (newVal) {
+                document.getElementById('video-uploaded').style.opacity = 0;
+            } else {
+                document.getElementById('video-uploaded').style.opacity = 1;
+            }
+        });
     }])
     .controller('videoShareCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', '$q', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, $q) {
         $scope.closeDimmer = function () {
