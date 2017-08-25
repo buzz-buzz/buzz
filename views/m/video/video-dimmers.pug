@@ -2,16 +2,15 @@
     .content(style='position: relative;', ng-click='closeDimmer()')
         img(src='//resource.buzzbuzzenglish.com/video-share-friends.png', style='width: 100%;')
 .ui.dimmer#dimmer-processing
-    .content(style='position: relative;')
-        div(style='width: 100%; text-align: center; position: absolute; top: 30%; z-index:1') 
-            img(src='//resource.buzzbuzzenglish.com/video-loading.gif', style="width: 50%;")
-        .ui.inverted.segment.loading(ng-class="{'loading': loading}")
-            p 该视频正在处理中，请稍后再回来查看……
+    .ui.segment.loading.content(style='position: relative; background: #262522; margin: 0; padding: 0; border: none;', ng-class="{'loading': loading}")
+        div(style='width: 100%;') 
+            img(src='//resource.buzzbuzzenglish.com/video-0825.gif')
+    
+            p(style="position: absolute; left: 20%; top: 49%;") 该视频正在处理中，请稍后再回来查看……
     .renovate-button(style="position: absolute; width: 100%; text-align: center; bottom: 35%; height: 45px; line-height: 45px;" ng-click="refreshStatus()" )
         img(src='//resource.buzzbuzzenglish.com/button.png', style="width: 30%;")
         .link(style="position: absolute; top: 0; width: 100%; text-align: center; padding-top: 0.25rem; font-size: 12px; font-weight: bolder") 刷新一下
 .ui.dimmer#dimmer-error
-    
     .ui.loading.inverted.segment(ng-if="loading")
     .content
         p 在获取视频信息时碰到了错误，请稍后回来查看……
