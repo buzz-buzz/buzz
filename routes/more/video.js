@@ -119,7 +119,7 @@ module.exports = function (app, router, render, server) {
             this.body = `/videos/${encodedPath}`;
         })
         .get('/videos/:path', function* (next) {
-            let fpath = new Buffer(this.params.path.replace('.mp4', ''), 'base64').toString();
+            let fpath = new Buffer(this.params.path.replace('.mp4', '').replace('.vtt', ''), 'base64').toString();
             let fstat = fs.statSync(fpath);
 
             if (fstat.isFile()) {
