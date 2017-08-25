@@ -202,7 +202,7 @@ angular.module('spaModule')
             $location.path('/video-player/' + btoa(encodeURIComponent($scope.videoSrc)));
         };
     }])
-    .controller('videoPlayerCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce) {
+    .controller('videoPlayerCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', '$timeout', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce, $timeout) {
         $scope.hideVideo = false;
 
         function showProcessing() {
@@ -210,27 +210,45 @@ angular.module('spaModule')
             $scope.hideVideo = true;
         }
 
+        function hideProcessing() {
+            $('#dimmer-processing').dimmer('hide');
+            $scope.hideVideo = false;
+        }
+
         function showError() {
             $('#dimmer-error').dimmer('show');
             $scope.hideVideo = true;
         }
 
-        videoStatus.get(atob($routeParams.src)).then(function (status) {
-            $scope.videoStatus = status;
-            if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
-                $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
-                document.getElementById('video-uploaded').style.opacity = '0';
-                $('#dimmer-video-grade').dimmer({
-                    closable: false
-                }).dimmer('show');
-            }
-        }).catch(function (reason) {
-            if (reason === 'processing') {
-                showProcessing();
-            } else {
-                showError();
-            }
-        });
+        function hideError() {
+            $('#dimmer-error').dimmer('hide');
+            $scope.hideVideo = false;
+        }
+
+        function getVideoStatus() {
+            $scope.loading = true;
+            videoStatus.get(atob($routeParams.src)).then(function (status) {
+                $scope.videoStatus = status;
+                if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
+                    $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
+                    document.getElementById('video-uploaded').style.opacity = '0';
+                    $('#dimmer-video-grade').dimmer({
+                        closable: false
+                    }).dimmer('show');
+                }
+
+                hideProcessing();
+                hideError();
+            }).catch(function (reason) {
+                if (reason === 'processing') {
+                    showProcessing();
+                } else {
+                    showError();
+                }
+            }).finally(function () {
+                $scope.loading = false;
+            });
+        }
 
         $scope.closeVideoGrade = function () {
             if ($scope.videoStatus.score > 30) {
@@ -256,8 +274,13 @@ angular.module('spaModule')
         $scope.gotoVideoRecord = function () {
             $location.path('/video');
         };
+        getVideoStatus();
 
-        console.log($location.path());
+        $scope.refreshStatus = getVideoStatus;
+
+        $timeout(function () {
+          getVideoStatus()
+        }, 15000);
     }])
     .controller('videoShareCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', '$q', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, $q) {
         $scope.closeDimmer = function () {
