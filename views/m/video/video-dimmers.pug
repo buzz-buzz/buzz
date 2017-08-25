@@ -2,8 +2,14 @@
     .content(style='position: relative;', ng-click='closeDimmer()')
         img(src='//resource.buzzbuzzenglish.com/video-share-friends.png', style='width: 100%;')
 .ui.dimmer#dimmer-processing
-    .content
+    
+    .content(style='position: relative;')
+        div(style='width: 100%; text-align: center; position: absolute; top: 30%;') 
+            img(src='//resource.buzzbuzzenglish.com/video-loading.gif', style="width: 50%;")
         p 该视频正在处理中，请稍后再回来查看……
+    .renovate-button(style="position: absolute; width: 100%; text-align: center; bottom: 35%; height: 45px; line-height: 45px;" onclick="location.reload()" )
+        img(src='//resource.buzzbuzzenglish.com/button.png', style="width: 30%;")
+        .link(style="position: absolute; top: 0; width: 100%; text-align: center; padding-top: 0.25rem; font-size: 12px; font-weight: bolder") 刷新一下
 .ui.dimmer#dimmer-error
     .content
         p 在获取视频信息时碰到了错误，请稍后回来查看……
