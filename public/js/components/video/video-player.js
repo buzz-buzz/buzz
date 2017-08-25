@@ -18,7 +18,7 @@ angular.module('spaModule')
                     }],
                     tracks: [{
                         file: $scope.videoStatus.vtt,
-                        kind: 'captions',
+                        kind: 'subtitles',
                         label: 'English',
                         'default': true
                     }]
