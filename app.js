@@ -24,9 +24,9 @@ app.use(logger());
 app.use(trackingInfo.rememberSource);
 
 app.on('error', function (err, ctx) {
+    greenSharedLogger.error('error occurred from referer: ' + ctx.req.headers.referer);
     greenSharedLogger.error(err);
 });
-
 
 app.use(function* (next) {
     yield next;

@@ -115,6 +115,10 @@ module.exports = function (app, router, render, server) {
                 }
             }
 
+            if (!vttStoredPath || !fs.existsSync(vttStoredPath)) {
+                greenSharedLogger.error(`上传时没有生成期待的字幕文件！${vttStoredPath}`)
+            }
+
             let encodedPath = new Buffer(videoStoredPath).toString('base64');
             this.body = `/videos/${encodedPath}`;
         })

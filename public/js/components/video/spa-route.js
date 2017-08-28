@@ -218,7 +218,6 @@ angular.module('spaModule')
             $scope.hideVideo = true;
         }
 
-<<<<<<< HEAD
         function hideError() {
             $('#dimmer-error').dimmer('hide');
             $scope.hideVideo = false;
@@ -232,12 +231,14 @@ angular.module('spaModule')
         }
 
         function hideGoodScoreDimmer() {
-            $('#dimmer-good-score').dimmer('hide');
+            $('#dimmer-good-score').dimmer('toggle').dimmer('hide');
             $scope.hideVideo = false;
         }
 
         function showBadScoreDimmer() {
-            $('#dimmer-bad-score').dimmer({closable: true}).dimmer('show');
+            $('#dimmer-bad-score').dimmer({
+                closable: true
+            }).dimmer('show');
             $scope.hideVideo = true;
         }
 
@@ -259,6 +260,10 @@ angular.module('spaModule')
             }).catch(function (reason) {
                 if (reason === 'processing') {
                     showProcessing();
+
+                    $timeout(function () {
+                        getVideoStatus();
+                    }, 15000);
                 } else {
                     showError();
                 }
@@ -270,27 +275,6 @@ angular.module('spaModule')
         $scope.closeVideoGrade = function () {
             if ($scope.videoStatus.score > 30) {
                 hideGoodScoreDimmer();
-=======
-        videoStatus.get(atob($routeParams.src)).then(function (status) {
-            $scope.videoStatus = status;
-            if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
-                $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
-                document.getElementById('video-uploaded').style.opacity = '0';
-                $('#dimmer-video-grade').dimmer('show');
-            }
-        }).catch(function (reason) {
-            if (reason === 'processing') {
-                showProcessing();
-            } else {
-                showError();
-            }
-        });
-
-        $scope.closeVideoGrade = function () {
-            if ($scope.videoStatus.score > 30) {
-                $('#dimmer-video-grade').dimmer('hide');
-                document.getElementById('video-uploaded').style.opacity = '1';
->>>>>>> Use cartoonized video first
             } else {
                 $location.path('/video');
             }
@@ -311,13 +295,10 @@ angular.module('spaModule')
         $scope.gotoVideoRecord = function () {
             $location.path('/video');
         };
+
         getVideoStatus();
 
         $scope.refreshStatus = getVideoStatus;
-
-        $timeout(function () {
-            getVideoStatus()
-        }, 15000);
 
         $scope.$watch('hideVideo', function (newVal, oldVal) {
             if (newVal) {
