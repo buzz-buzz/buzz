@@ -26,6 +26,9 @@ angular.module('spaModule')
 
         $routeProvider.otherwise('/video');
     }])
+    .run([function () {
+        jwplayer.key = 'lG24bAGJCRLF1gi4kajg4EnUKi+ujyUyKMoSNA==';
+    }])
     .run(['$rootScope', '$location', function ($rootScope, $location) {
         function makePath(urlTemplate, args) {
             return urlTemplate.replace(/:[^\/]+/g, function (m, capturedGroup) {
@@ -54,6 +57,8 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
+                        //status.score = 0.9;
+                        // status.status = 'done';
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -183,7 +188,19 @@ angular.module('spaModule')
     }])
     .controller('videoPreviewCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout) {
         $scope.videoSrc = decodeURIComponent($routeParams.src);
-
+        var videoPlayer = jwplayer('video-player').setup({
+            height: document.querySelector('#video-player').offsetHeight,
+            width: '100%',
+            playlist: [{
+                description: status.description,
+                image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
+                stretching: 'none',
+                sources: [{
+                    file: $scope.videoSrc + '.mp4',
+                    image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png'
+                }]
+            }]
+        })
         $scope.$watch('errorMessage', function (newValue, oldValue) {
             if (newValue) {
                 $timeout(function () {
@@ -257,6 +274,36 @@ angular.module('spaModule')
                         showBadScoreDimmer();
                     }
                 }
+                var options = {
+                    height: document.querySelector('#video-uploaded').offsetHeight,
+                    width: '100%',
+                    playlist: [{
+                        description: status.description,
+                        image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
+                        stretching: 'none',
+                        sources: [{
+                            file: $scope.videoStatus.raw + '.mp4',
+                            image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png'
+                        }],
+                        tracks: [{
+                            file: $scope.videoStatus.vtt,
+                            kind: 'subtitles',
+                            label: 'English',
+                            'default': true
+                        }]
+                    }]
+                };
+                if ($scope.videoStatus.cartoonized) {
+                    options.playlist[0].sources.push({
+                        file: $scope.videoStatus.cartoonized + '.mp4',
+                        image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
+                        'default': true
+                    });
+                }
+                var videoPlayer = jwplayer('video-uploaded').setup(options);
+
+                hideProcessing();
+                hideError();
             }).catch(function (reason) {
                 if (reason === 'processing') {
                     showProcessing();
@@ -270,6 +317,7 @@ angular.module('spaModule')
             }).finally(function () {
                 $scope.loading = false;
             });
+
         }
 
         $scope.closeVideoGrade = function () {
@@ -299,7 +347,6 @@ angular.module('spaModule')
         getVideoStatus();
 
         $scope.refreshStatus = getVideoStatus;
-
         $scope.$watch('hideVideo', function (newVal, oldVal) {
             if (newVal) {
                 document.getElementById('video-uploaded').style.opacity = 0;
@@ -307,6 +354,9 @@ angular.module('spaModule')
                 document.getElementById('video-uploaded').style.opacity = 1;
             }
         });
+        $timeout(function () {
+            getVideoStatus()
+        }, 15000);
     }])
     .controller('videoShareCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', '$q', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, $q) {
         $scope.closeDimmer = function () {
