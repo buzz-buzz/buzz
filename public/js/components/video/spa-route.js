@@ -57,8 +57,6 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
-                        //status.score = 0.9;
-                        status.status = 'done';
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -215,7 +213,7 @@ angular.module('spaModule')
                 hideProcessing();
                 hideError();
                 $scope.videoStatus = status;
-                $scope.$broadcast('videoStatus', status)
+                $scope.$broadcast('videoStatus', status);
                 if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
                     $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
                     if ($scope.videoStatus.score > 30) {
@@ -343,7 +341,7 @@ angular.module('spaModule')
 
         videoStatus.get(atob($routeParams.src)).then(function (status) {
             $scope.videoStatus = status;
-            $scope.config = status.videoConfig;
+            $scope.$broadcast('videoStatus', status);
         }).catch(function (reason) {
             if (reason === 'processing') {
                 showProcessing();

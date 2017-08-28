@@ -1,8 +1,6 @@
 script(type="text/ng-template", id="video-share.html")
     .ui.container(ng-hide="hideVideo")
         p(style='font-size: 20px; margin: 1rem 0; font-family:"HYxindipaofu"') 您的好友给你分享了TA的作品 :
-        //video#video-uploaded(style="width: 100%; max-height: 250px;", controls="controls", autoplay, crossorigin="Anonymous", preload, ng-src="{{videoStatus.subtitled.mov}}", type="video/*", poster="//resource.buzzbuzzenglish.com/image/png/buzz-poster.png")
-        //    //- track(ng-src="{{videoStatus.vtt}}", label="English subtitles", kind="subtitles", srclang="en")
         include video-angular
         .ui.share-friend(style='margin-top: 2rem;')
             button.btn.center-block(ng-click='shareToFriends()', style='font-size: 20px; background-color: #f7b52a; letter-spacing: 3px; color: #fff; font-family:"HYxindipaofu"') 分享给朋友
