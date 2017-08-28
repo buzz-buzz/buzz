@@ -1,5 +1,5 @@
 script(type="text/ng-template", id="video.html")
-    form.ui.form(ng-class="{'error': !!errorMessage, 'loading': uploading}")
+    form.ui.form(ng-class="{'error': !!errorMessage, 'loading': uploading || loading}")
         include ../../partial/formMessage
         fieldset
             legend(style='text-align: center; font-size: 40px; padding-top: 2rem; border: none; margin-bottom: 0; font-family:"HYxindipaofu"; font-weight: 800;') level 1

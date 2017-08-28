@@ -171,8 +171,7 @@ angular.module('spaModule')
             }
         };
 
-        //get new subtitle
-        //todo: subtitle server list
+        $scope.loading = true;
         api.get('/service-proxy/buzz/video/subtitle-list')
             .then(function (dialogueList) {
                 if (dialogueList.data.length > 0) {
@@ -184,6 +183,9 @@ angular.module('spaModule')
                 if (dialogueList.data.length > 1) {
                     $scope.changeDialogueTag = true;
                 }
+            })
+            .finally(function () {
+                $scope.loading = false;
             });
     }])
     .controller('videoPreviewCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout) {
