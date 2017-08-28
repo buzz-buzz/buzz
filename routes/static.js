@@ -20,7 +20,14 @@ let getStaticSetting = function () {
 module.exports = function (app, router) {
     router.get('/buzz2.appcache', function () {
         this.set('Content-type', 'text/cache-manifest');
-        this.body = fs.readFileSync(__dirname + '/../public/buzz2.appcache', 'utf-8');
+        let appCache = fs.readFileSync(__dirname + '/../public/buzz2.appcache', 'utf-8');
+
+        if (!process.env.NODE_ENV || process.env.NODE_ENV === 'dev') {
+            this.body = appCache
+                .replace(/CACHE:[\r\n]+#Generated:[\s\S]*#Other:/g, 'CACHE:\n#Generated:\n' + '' + '\n#Other:\n');
+        } else {
+            this.body = appCache;
+        }
     });
 
     app.use(require('koa-cors')({

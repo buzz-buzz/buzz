@@ -111,47 +111,6 @@ angular.module('spaModule')
             $scope.uploadVideoToOwnServer();
         };
 
-        $scope.uploadVideo = function () {
-            var file = document.querySelector('input[id=video-file]');
-
-            if (file) {
-                file = file.files[0];
-            }
-
-            if (!file && recordedBlobs && recordedBlobs.length) {
-                file = new Blob(recordedBlobs, {
-                    type: 'video/webm'
-                });
-            }
-
-            if (file) {
-                $scope.uploading = true;
-                $http.put('/videos', {
-                    file: file,
-                    'x:category': 'upload-' + Math.random().toString()
-                }, {
-                    headers: {
-                        'X-Requested-With': undefined,
-                        'Content-Type': undefined
-                    },
-                    transformRequest: requestTransformers.transformToFormData
-                }).then(function (res) {
-                    if (res.data.isSuccess === false) {
-                        throw res;
-                    } else {
-                        $location.path('/video-player/' + encodeURIComponent('//' + res.data.host + '/' + res.data.key));
-                    }
-                }).then(null, function (reason) {
-                    console.error(reason);
-                    $scope.errorMessage = reason.data || '出了错误。';
-                }).finally(function () {
-                    $scope.uploading = false;
-                });
-            } else {
-                $scope.errorMessage = 'Please record a video first!';
-            }
-        };
-
         $scope.$watch('errorMessage', function (newValue, oldValue) {
             if (newValue) {
                 $timeout(function () {
@@ -356,9 +315,6 @@ angular.module('spaModule')
                 document.getElementById('video-uploaded').style.opacity = 1;
             }
         });
-        $timeout(function () {
-            getVideoStatus()
-        }, 15000);
     }])
     .controller('videoShareCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', '$q', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, $q) {
         $scope.closeDimmer = function () {

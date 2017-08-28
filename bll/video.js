@@ -90,7 +90,7 @@ module.exports = {
 ${dialog}
 
 `;
-        fs.writeFile(vttPath, vtt, 'utf-8', function () {});
+        fs.writeFileSync(vttPath, vtt, 'utf-8');
     },
 
     getStatusInfo: function (videoStoredPath) {

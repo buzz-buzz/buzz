@@ -111,6 +111,7 @@ module.exports = function (app, router, render, server) {
                     part.pipe(stream);
                     console.log('uploading %s --> %s', part.filename, stream.path);
                 } else {
+                    console.log('generating vtt: %s.', vttStoredPath);
                     videoBll.generateVtt(vttStoredPath, part[1]);
                 }
             }
