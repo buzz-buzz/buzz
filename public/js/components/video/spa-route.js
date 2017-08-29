@@ -57,6 +57,7 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
+                        status.status='done'
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -146,15 +147,20 @@ angular.module('spaModule')
             });
     }])
     .controller('videoPreviewCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', 'videoStatus', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout, videoStatus) {
-
-        $scope.videoSrc = decodeURIComponent($routeParams.src);
+        $scope.videoStatus = {
+            description: '',
+            raw: decodeURIComponent($routeParams.src)
+        };
         $scope.$watch('errorMessage', function (newValue, oldValue) {
             if (newValue) {
                 $timeout(function () {
                     $scope.errorMessage = '';
                 }, 2000)
             }
-            $scope.$broadcast('videoSrc', decodeURIComponent($routeParams.src));
+        });
+
+        angular.element(document).ready(function(){
+            $scope.$broadcast('//video-info:got', $scope.videoStatus);
         });
 
         $scope.tryAgain = function () {
@@ -162,7 +168,7 @@ angular.module('spaModule')
         };
 
         $scope.sureUpload = function () {
-            $location.path('/video-player/' + btoa(encodeURIComponent($scope.videoSrc)));
+            $location.path('/video-player/' + btoa(encodeURIComponent(decodeURIComponent($routeParams.src))));
         };
     }])
     .controller('videoPlayerCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', '$timeout', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce, $timeout) {
@@ -213,7 +219,7 @@ angular.module('spaModule')
                 hideProcessing();
                 hideError();
                 $scope.videoStatus = status;
-                $scope.$broadcast('videoStatus', status);
+                $scope.$broadcast('//video-info:got', status);
                 if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
                     $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
                     if ($scope.videoStatus.score > 30) {
@@ -341,7 +347,7 @@ angular.module('spaModule')
 
         videoStatus.get(atob($routeParams.src)).then(function (status) {
             $scope.videoStatus = status;
-            $scope.$broadcast('videoStatus', status);
+            $scope.$broadcast('//video-info:got', status);
         }).catch(function (reason) {
             if (reason === 'processing') {
                 showProcessing();
@@ -361,10 +367,8 @@ angular.module('spaModule')
             $location.path('/video');
         };
     }])
-    .controller('jwPlayerCtrl1', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce) {
-        $scope.videoStatus = '';
-        $scope.$on('videoStatus', function (event, data) {
-            $scope.videoStatus = data;
+    .controller('jwPlayerCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout) {
+        $scope.$on('//video-info:got', function (event, status) {
             var options = {
                 height: document.querySelector('#video-uploaded').offsetHeight,
                 width: '100%',
@@ -373,44 +377,27 @@ angular.module('spaModule')
                     image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
                     stretching: 'none',
                     sources: [{
-                        file: $scope.videoStatus.raw + '.mp4',
+                        file: status.raw + '.mp4',
                         image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png'
-                    }],
-                    tracks: [{
-                        file: $scope.videoStatus.vtt,
-                        kind: 'subtitles',
-                        label: 'English',
-                        'default': true
                     }]
                 }]
             };
-            if ($scope.videoStatus.cartoonized) {
+            if (status.vtt) {
+                options.playlist[0].tracks = [{
+                    file: status.vtt,
+                    kind: 'subtitles',
+                    label: 'English',
+                    'default': true
+                }];
+            }
+            if (status.cartoonized) {
                 options.playlist[0].sources.push({
-                    file: $scope.videoStatus.cartoonized + '.mp4',
+                    file: status.cartoonized + '.mp4',
                     image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
                     'default': true
                 });
             }
             var videoPlayer = jwplayer('video-uploaded').setup(options);
-        })
-    }])
-    .controller('jwPlayerCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout) {
-        $scope.videoSrc = '';
-        $scope.$on('videoSrc', function (event, data) {
-            $scope.videoSrc = data;
-            var videoPlayer = jwplayer('video-player').setup({
-                height: document.querySelector('#video-player').offsetHeight,
-                width: '100%',
-                playlist: [{
-                    description: status.description,
-                    image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
-                    stretching: 'none',
-                    sources: [{
-                        file: $scope.videoSrc + '.mp4',
-                        image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png'
-                    }]
-                }]
-            })
-        })
+        });
 
     }]);
