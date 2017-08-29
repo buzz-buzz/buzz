@@ -331,6 +331,12 @@ angular.module('spaModule')
         }
 
         wechatSharable(sharable);
+        $rootScope.$on('//profile:got', function (event, result) {
+            if (result) {
+                sharable.link = sharable.link + '?trk_tag=' + result.data.result.invite_code;
+            }
+        })
+
     }])
     .controller('videoShareFriendCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location) {
         $scope.hideVideo = false;
