@@ -20,6 +20,11 @@ function getCartoonizedPath(videoPath) {
     return `${parsed.dir}${path.sep}c-${parsed.base}`;
 }
 
+function getPasteredPath(videoPath) {
+    let parsed = path.parse(videoPath);
+    return `${parsed.dir}${path.sep}p-${parsed.base}`;
+}
+
 function getExpectedVttStoredPath(videoPath) {
     let parsed = path.parse(videoPath);
     return `${parsed.dir}${path.sep}exp-${parsed.name}.vtt`;
@@ -98,6 +103,7 @@ ${dialog}
         let vttPath = getVttStoredPath(videoStoredPath);
         let scorePath = getScorePath(videoStoredPath);
         let cartoonizedPath = getCartoonizedPath(videoStoredPath);
+        let pasteredPath = getPasteredPath(videoStoredPath);
 
         let result = {
             status: 'done',
@@ -108,6 +114,10 @@ ${dialog}
 
         if (fs.existsSync(cartoonizedPath)) {
             result.cartoonized = getURIAddress(cartoonizedPath);
+        }
+
+        if (fs.existsSync(pasteredPath)) {
+            result.pastered = getURIAddress(pasteredPath);
         }
 
         if (!fs.existsSync(expVttPath)) {

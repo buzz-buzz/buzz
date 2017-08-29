@@ -158,7 +158,7 @@ angular.module('spaModule')
             }
         });
 
-        angular.element(document).ready(function(){
+        angular.element(document).ready(function () {
             $scope.$broadcast('//video-info:got', $scope.videoStatus);
         });
 
@@ -377,7 +377,8 @@ angular.module('spaModule')
                     stretching: 'none',
                     sources: [{
                         file: status.raw + '.mp4',
-                        image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png'
+                        image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
+                        label: '原始文件'
                     }]
                 }]
             };
@@ -389,11 +390,19 @@ angular.module('spaModule')
                     'default': true
                 }];
             }
+            if (status.pastered) {
+                options.playlist[0].sources.push({
+                    file: status.pastered + '.mp4',
+                    image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
+                    "default": true,
+                    label: '贴纸效果'
+                });
+            }
             if (status.cartoonized) {
                 options.playlist[0].sources.push({
                     file: status.cartoonized + '.mp4',
                     image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
-                    'default': true
+                    label: '卡通效果'
                 });
             }
             var videoPlayer = jwplayer('video-uploaded').setup(options);
