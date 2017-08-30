@@ -4,7 +4,8 @@ angular.module('buzzHeaderModule', ['angularQueryParserModule', 'servicesModule'
             .then(function (result) {
                 if (result.data.isSuccess) {
                     $rootScope.profile = result.data.result;
-                    $rootScope.$broadcast('//profile:got', result)
+                    $rootScope.$broadcast('//profile:got', $rootScope.profile);
+                    console.log('profile got');
                     if (!$rootScope.profile.avatar) {
                         $rootScope.profile.avatar = '/public/images/default_avatar.png';
                     }

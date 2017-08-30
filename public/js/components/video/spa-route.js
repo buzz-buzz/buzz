@@ -57,7 +57,7 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
-                        // status.status = 'done';
+                        status.status = 'done';
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -351,8 +351,6 @@ angular.module('spaModule')
             imgUrl: 'https://resource.buzzbuzzenglish.com/wechat-share-friend.jpg'
         };
 
-        $rootScope.wechatSharable = sharable;
-
         function wxReady() {
             var dfd = $q.defer();
 
@@ -369,27 +367,29 @@ angular.module('spaModule')
 
         function wechatSharable(sharable) {
             try {
-                $rootScope.wechatSharable.desc = sharable.desc;
-                $rootScope.wechatSharable.title = sharable.title;
-
                 wxReady().then(function () {
-                    wx.onMenuShareTimeline(angular.extend({}, $rootScope.wechatSharable, {
-                        title: $rootScope.wechatSharable.title + ' ' + $rootScope.wechatSharable.desc
+                    wx.onMenuShareTimeline(angular.extend({}, sharable, {
+                        title: sharable.title + ' ' + sharable.desc
                     }));
 
-                    wx.onMenuShareAppMessage(angular.extend({}, $rootScope.wechatSharable));
+                    wx.onMenuShareAppMessage(angular.extend({}, sharable));
                 });
             } catch (ex) {
                 console.error(ex);
             }
         }
 
-        wechatSharable(sharable);
-        $rootScope.$on('//profile:got', function (event, result) {
-            if (result) {
-                sharable.link = sharable.link + '?trk_tag=' + result.data.result.invite_code;
+        handleProfile(null, $rootScope.profile);
+
+        function handleProfile(event, profile){
+            if(profile){
+                sharable.link = sharable.link + '?trk_tag=' + profile.invite_code;
             }
-        })
+
+            wechatSharable(sharable);
+        }
+
+        $rootScope.$on('//profile:got', handleProfile);
 
     }])
     .controller('videoShareFriendCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location) {
