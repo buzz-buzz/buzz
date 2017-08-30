@@ -57,7 +57,6 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
-                        // status.status = 'done';
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -452,12 +451,19 @@ angular.module('spaModule')
                     'default': true
                 }];
             }
+            if (status.pasteredNose) {
+                options.playlist[0].sources.push({
+                    file: status.pasteredNose + '.mp4',
+                    image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
+                    "default": true,
+                    label: '猫须效果'
+                });
+            }
             if (status.pastered) {
                 options.playlist[0].sources.push({
                     file: status.pastered + '.mp4',
                     image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
-                    "default": true,
-                    label: '贴纸效果'
+                    label: '墨镜效果'
                 });
             }
             if (status.cartoonized) {
