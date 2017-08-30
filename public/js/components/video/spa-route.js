@@ -57,7 +57,7 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
-                        // status.status = 'done';
+                        status.status = 'done';
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -79,8 +79,8 @@ angular.module('spaModule')
         $scope.uploadAgainTag = false;
         $scope.changeDialogueTag = false;
 
-        function saveUrl(url){
-            api.get('/service-proxy/buzz/video/save/path/' + url).then(function(res){
+        function saveUrl(url) {
+            api.get('/service-proxy/buzz/video/save/path/' + url).then(function (res) {
                 console.log(res.data);
             });
         }
@@ -345,10 +345,10 @@ angular.module('spaModule')
 
         //share to friends
         var sharable = {
-            title: '我在Buzzbuzz自拍了英语视频，快来看看吧',
-            desc: '邀请你看TA的自拍秀',
+            title: '邀请你看TA的自拍秀',
+            desc: '我在Buzzbuzz自拍了英语视频，快来看看吧',
             link: location.href.replace('video-player', 'video-share'),
-            imgUrl: 'https://resource.buzzbuzzenglish.com/wechat-share-friend.jpg'
+            imgUrl: 'https://resource.buzzbuzzenglish.com/new_buzz_logo.png'
         };
 
         function wxReady() {
@@ -381,9 +381,10 @@ angular.module('spaModule')
 
         handleProfile(null, $rootScope.profile);
 
-        function handleProfile(event, profile){
-            if(profile){
+        function handleProfile(event, profile) {
+            if (profile) {
                 sharable.link = sharable.link + '?trk_tag=' + profile.invite_code;
+                sharable.title = profile.display_name + sharable.title;
             }
 
             wechatSharable(sharable);

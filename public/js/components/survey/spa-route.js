@@ -49,7 +49,7 @@ angular.module('spaModule', [
                     title: '孩子一个月看懂全球英语资讯？这不是痴人说梦',
                     desc: profile.display_name + '邀请你支持' + myAnswer,
                     link: location.origin + '/survey/help-friend/' + short_id + '/' + member_id,
-                    imgUrl: 'https://resource.buzzbuzzenglish.com/wechat-share-friend.jpg'
+                    imgUrl: 'https://resource.buzzbuzzenglish.com/new_buzz_logo.png'
                 };
                 $rootScope.wechatSharable = sharable;
 
