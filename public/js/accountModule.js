@@ -51,6 +51,11 @@ angular.module('accountModule', ['clientConfigModule', 'buzzHeaderModule', 'educ
             event.stopPropagation();
         };
 
+        $scope.showMyVideoList = function () {
+            location.href = '/video-list';
+            event.stopPropagation();
+        };
+
         $scope.showUserAccount = function() {
             location.href = '/my/user-account';
             event.stopPropagation();

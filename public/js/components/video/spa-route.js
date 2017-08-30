@@ -79,6 +79,12 @@ angular.module('spaModule')
         $scope.uploadAgainTag = false;
         $scope.changeDialogueTag = false;
 
+        function saveUrl(url){
+            api.get('/service-proxy/buzz/video/save/path/' + url).then(function(res){
+                console.log(res.data);
+            });
+        }
+
         $scope.uploadVideoToOwnServer = function () {
             var file = document.querySelector('input[id=video-file]').files[0];
 
@@ -94,7 +100,10 @@ angular.module('spaModule')
                     },
                     transformRequest: requestTransformers.transformToFormData
                 }).then(function (res) {
-                    $location.path('/video-preview/' + encodeURIComponent(res.data));
+                    var backUrl = encodeURIComponent(res.data);
+                    //bta(res.data) 返回的url，保存在数据库中
+                    saveUrl(btoa(backUrl));
+                    $location.path('/video-preview/' + backUrl);
                 }).catch(function (reason) {
                     $scope.errorMessage = reason.statusText || reason;
                     $scope.uploadAgainTag = true;
@@ -108,6 +117,51 @@ angular.module('spaModule')
 
         $scope.videoChange = function () {
             $scope.uploadVideoToOwnServer();
+        };
+
+        //PC端在使用
+        $scope.uploadVideo = function () {
+            var file = document.querySelector('input[id=video-file]');
+
+            if (file) {
+                file = file.files[0];
+            }
+
+            if (!file && recordedBlobs && recordedBlobs.length) {
+                file = new Blob(recordedBlobs, {
+                    type: 'video/webm'
+                });
+            }
+
+            if (file) {
+                $scope.uploading = true;
+                $http.put('/videos', {
+                    file: file,
+                    'x:category': 'upload-' + Math.random().toString()
+                }, {
+                    headers: {
+                        'X-Requested-With': undefined,
+                        'Content-Type': undefined
+                    },
+                    transformRequest: requestTransformers.transformToFormData
+                }).then(function (res) {
+                    if (res.data.isSuccess === false) {
+                        throw res;
+                    } else {
+                        var backUrl = encodeURIComponent('//' + res.data.host + '/' + res.data.key);
+                        //bta(res.data) 返回的url，保存在数据库中
+                        //saveUrl(btoa(backUrl));
+                        $location.path('/video-player/' + backUrl);
+                    }
+                }).then(null, function (reason) {
+                    console.error(reason);
+                    $scope.errorMessage = reason.data || '出了错误。';
+                }).finally(function () {
+                    $scope.uploading = false;
+                });
+            } else {
+                $scope.errorMessage = 'Please record a video first!';
+            }
         };
 
         $scope.$watch('errorMessage', function (newValue, oldValue) {
