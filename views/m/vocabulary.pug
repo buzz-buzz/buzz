@@ -1,7 +1,7 @@
 extends ../m/mobile-layout
 block meta
     + css("/public/css/fixed-ratio.min.css")
-block js
+block  extraJs
     script.
         angular.module('spaModule')
             .run(['$rootScope', function ($rootScope) {

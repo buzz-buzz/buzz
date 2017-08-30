@@ -80,7 +80,7 @@ block content
                 img(style='width:100%;',ng-src='{{$root.profile.avatar}}')
             div.errmsg(ng-if="$root.profile.errorMessage", ng-cloak, ng-click="errDone()")
                 div {{$root.profile.errorMessage}}
-block js
+block extraJs
     script.
         function preview(file) {
             document.getElementById('submitHeadUrl').removeAttribute('disabled');
