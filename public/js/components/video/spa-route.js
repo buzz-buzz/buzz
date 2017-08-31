@@ -422,8 +422,14 @@ angular.module('spaModule')
     }])
     .controller('jwPlayerCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout) {
         $scope.$on('//video-info:got', function (event, status) {
+            var h = document.querySelector('#video-uploaded').offsetHeight;
+
+            if (h <= 0) {
+                h = '300px';
+            }
+
             var options = {
-                height: document.querySelector('#video-uploaded').offsetHeight,
+                height: '300px',
                 width: '100%',
                 playlist: [{
                     description: status.description,
