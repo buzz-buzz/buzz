@@ -16,7 +16,7 @@ describe('survey', function () {
     });
 
     it('gets iframe url by long id', function* () {
-        assert.equal(surveyBll.getIframeUrl('abcdefg'), 'http://www.wenjuan.com/iframe/abcdefg/');
+        assert.equal(surveyBll.getIframeUrl('abcdefg'), 'abcdefg?iframe=1&');
     });
 });
 

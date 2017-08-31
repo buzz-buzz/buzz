@@ -22,6 +22,8 @@ module.exports = function (config) {
             "node_modules/angular-service/dist/scripts/all.min.js",
             'node_modules/angular-mocks/angular-mocks.js',
             'public/js/**.js',
+            'public/js/components/spa-module.js',
+            'public/js/components/router-helper.js',
             'test/client/clientConfig.js',
             'test/client/**/*Test.js'
         ],

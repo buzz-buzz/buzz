@@ -29,20 +29,13 @@ angular.module('spaModule')
     .run([function () {
         jwplayer.key = 'lG24bAGJCRLF1gi4kajg4EnUKi+ujyUyKMoSNA==';
     }])
-    .run(['$rootScope', '$location', function ($rootScope, $location) {
-        function makePath(urlTemplate, args) {
-            return urlTemplate.replace(/:[^\/]+/g, function (m, capturedGroup) {
-                return args[capturedGroup];
-            });
-        }
-
+    .run(['$rootScope', '$location', 'routerHelper', function ($rootScope, $location, routerHelper) {
         $rootScope.$on('$routeChangeSuccess', function (ev, current, previous) {
             $rootScope.back = function ($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
-
-                if (previous) {
-                    $location.path(makePath(previous.$$route.originalPath, previous.$$route.params));
+                if (previous && history) {
+                    history.back();
                 } else {
                     location.href = '/';
                 }

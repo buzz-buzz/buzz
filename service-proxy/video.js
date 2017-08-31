@@ -4,6 +4,7 @@ const config = require('../config');
 const membership = require('../membership');
 const proxy = require('./proxy');
 const video = require('../bll/video');
+const Router = require('koa-router');
 
 const proxyOption = {
     host: config.buzz.inner.host,
@@ -49,7 +50,10 @@ module.exports = function (app, router, parse) {
                     member_id = this.state.hcd_user.member_id;
                 }
                 this.body = yield proxy(Object.assign({
-                    path: '/video/path/:member_id/:path'.replace(':member_id', member_id).replace(':path', path),
+                    path: Router.url('/video/path/:member_id/:path', {
+                        member_id: member_id,
+                        path: path
+                    }),
                     method: 'POST'
                 }, proxyOption));
             }
