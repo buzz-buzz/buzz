@@ -425,11 +425,11 @@ angular.module('spaModule')
             var h = document.querySelector('#video-uploaded').offsetHeight;
 
             if (h <= 0) {
-                h = '300px';
+                h = '164px';
             }
 
             var options = {
-                height: '300px',
+                height: h,
                 width: '100%',
                 playlist: [{
                     description: status.description,
