@@ -5,6 +5,19 @@ angular.module('spaModule', [
         'accountModule',
         'buzzHistoryModule'
     ])
+    .run(['$rootScope', '$location', function ($rootScope, $location, ) {
+        $rootScope.$on('$routeChangeSuccess', function (ev, current, previous) {
+            $rootScope.back = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                if (history) {
+                    history.back();
+                } else {
+                    location.href = '/';
+                }
+            };
+        });
+    }])
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
         $locationProvider.html5Mode(true);
 
