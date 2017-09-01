@@ -95,6 +95,7 @@ angular.module('spaModule')
                     var backUrl = encodeURIComponent(res.data);
                     //bta(res.data) 返回的url，保存在数据库中
                     saveUrl(btoa(backUrl));
+                    //回传video_path_id 作为参数，传递过去
                     $location.path('/video-preview/' + backUrl);
                 }).catch(function (reason) {
                     $scope.errorMessage = reason.statusText || reason;
@@ -270,8 +271,12 @@ angular.module('spaModule')
                     $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
                     if ($scope.videoStatus.score > 30) {
                         showGoodScoreDimmer();
+                        ////service-proxy/buzz/video/status/:member_id/:video_id/:status
+                        //todo：调用api 修改视频状态为 3 处理完成，待审核
                     } else {
                         showBadScoreDimmer();
+                        ////service-proxy/buzz/video/status/:member_id/:video_id/:status
+                        //todo：调用api 修改视频状态为 0 offline,下线
                     }
                 }
                 hideProcessing();

@@ -21,11 +21,11 @@ module.exports = function (app, router, parse) {
             }, proxyOption));
         })
         .get('/service-proxy/buzz/video/path/:page_size/:pageState?', membership.setHcdUserIfSignedIn, function *() {
-            let member_id = '00000000-0000-0000-0000-000000000000';
             let pageState = '';
             if(this.params.pageState){
                 pageState = this.params.pageState;
             }
+            let member_id = '00000000-0000-0000-0000-000000000000';
             if (this.state.hcd_user && this.state.hcd_user.member_id) {
                 member_id = this.state.hcd_user.member_id;
             }
@@ -43,8 +43,23 @@ module.exports = function (app, router, parse) {
             if (this.state.hcd_user && this.state.hcd_user.member_id) {
                 member_id = this.state.hcd_user.member_id;
             }
+
             this.body = yield proxy(Object.assign({
                 path: '/video/path/:member_id/:path'.replace(':member_id', member_id).replace(':path', path),
+                method: 'POST'
+            }, proxyOption));
+        })
+        .get('/service-proxy/buzz/video/status/:member_id/:video_id/:status', membership.setHcdUserIfSignedIn, function *() {
+            let video_id = this.params.video_id;
+            let status = this.params.status;
+            let member_id = '00000000-0000-0000-0000-000000000000';
+            if (this.state.hcd_user && this.state.hcd_user.member_id) {
+                member_id = this.state.hcd_user.member_id;
+            }
+
+            this.body = yield proxy(Object.assign({
+                path: '/video/path/status/:member_id/:video_id/:status'.replace(':member_id', member_id)
+                    .replace(':video_id', video_id).replace(':status', status),
                 method: 'POST'
             }, proxyOption));
         })
