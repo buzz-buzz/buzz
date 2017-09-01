@@ -36,27 +36,17 @@ module.exports = function (app, router, parse) {
                 method: 'GET'
             }, proxyOption));
         })
-        .get('/service-proxy/buzz/video/save/path/:path/:calc?', membership.setHcdUserIfSignedIn, function *() {
-            ///video/path/:member_id/:path/:calc?
+        .get('/service-proxy/buzz/video/save/path/:path', membership.setHcdUserIfSignedIn, function *() {
+            //video/path/:member_id/:path  新增
             let path = this.params.path;
-            if (this.params.calc && this.params.calc === 'delete' && path.length >= 38) {
-                this.body = yield proxy(Object.assign({
-                    path: '/video/path/:member_id/:path/:calc'.replace(':member_id', this.state.hcd_user.member_id).replace(':path', path).replace(':calc?', 'delete'),
-                    method: 'POST'
-                }, proxyOption));
-            } else if (!this.params.calc) {
-                let member_id = '00000000-0000-0000-0000-000000000000';
-                if (this.state.hcd_user && this.state.hcd_user.member_id) {
-                    member_id = this.state.hcd_user.member_id;
-                }
-                this.body = yield proxy(Object.assign({
-                    path: Router.url('/video/path/:member_id/:path', {
-                        member_id: member_id,
-                        path: path
-                    }),
-                    method: 'POST'
-                }, proxyOption));
+            let member_id = '00000000-0000-0000-0000-000000000000';
+            if (this.state.hcd_user && this.state.hcd_user.member_id) {
+                member_id = this.state.hcd_user.member_id;
             }
+            this.body = yield proxy(Object.assign({
+                path: '/video/path/:member_id/:path'.replace(':member_id', member_id).replace(':path', path),
+                method: 'POST'
+            }, proxyOption));
         })
     ;
 };
