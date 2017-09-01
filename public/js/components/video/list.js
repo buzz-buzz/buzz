@@ -7,7 +7,7 @@ angular.module('spaModule')
                 controllerAs: 'videoListCtrl'
             });
     }])
-    .controller('videoListCtrl', ['$scope', '$http', '$rootScope', '$anchorScroll', function ($scope, $http, $rootScope, $anchorScroll) {
+    .controller('videoListCtrl', ['$scope', '$http', '$rootScope', '$anchorScroll', '$filter', function ($scope, $http, $rootScope, $anchorScroll, $filter) {
         $scope.index = 1;
         $scope.videoLength = 10;
         $scope.more = true;
@@ -27,6 +27,8 @@ angular.module('spaModule')
                 .then(function (result) {
                     if(result.data && result.data.rows && result.data.rows.length >= 1){
                         for(var i in result.data.rows){
+                            var upload_time = result.data.rows[i].upload_time;
+                            result.data.rows[i].upload_time = $filter('date')(upload_time, 'yyyy-MM-dd HH:mm:ss');
                             $scope.videos.push(result.data.rows[i]);
                         }
                     }
