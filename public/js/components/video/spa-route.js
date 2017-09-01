@@ -340,7 +340,7 @@ angular.module('spaModule')
             title: '邀请你看TA的自拍秀',
             desc: '我在Buzzbuzz自拍了英语视频，快来看看吧',
             link: location.href.replace('video-player', 'video-share'),
-            imgUrl: 'https://resource.buzzbuzzenglish.com/new_buzz_logo.png'
+            imgUrl: 'https://resource.buzzbuzzenglish.com/new_buzz_logo1.png'
         };
 
         function wxReady() {

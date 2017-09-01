@@ -28,7 +28,7 @@ angular.module('wechatShareModule', ['clientConfigModule', 'buzzHeaderModule'])
             title: '用一杯咖啡价格，让孩子看懂英语新闻',
             desc: '每天更新的，青少年英语新闻分级阅读！精彩内容，不容错过...',
             link: location.href,
-            imgUrl: 'https://resource.buzzbuzzenglish.com/new_buzz_logo.png'
+            imgUrl: 'https://resource.buzzbuzzenglish.com/new_buzz_logo1.png'
         };
 
         $rootScope.wechatSharable = sharable;
