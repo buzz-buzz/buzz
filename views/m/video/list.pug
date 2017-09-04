@@ -3,7 +3,7 @@ script(type="text/ng-template", id="video-list.html")
         a(name='top')
         .ui.two.cards(style='margin-top: .5em; padding: .5rem; margin-bottom: 1em;')
             .card(ng-repeat='v in videos', style='width: calc(50% - 1em); margin-left: .5em; margin-right: .5em;')
-                a.img(ng-href="/video-player/{{v.video_path}}")
+                a.img(ng-href="/video-player/{{v.video_path_id}}")
                     img(src='//resource.buzzbuzzenglish.com/image/png/buzz-poster.png')
                 .extra(style='background-color: #eee; font-size: 1rem;', ng-cloak) {{v.upload_time}}
                     .ui.star.rating(data-rating="4")
