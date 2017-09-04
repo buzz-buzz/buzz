@@ -63,5 +63,17 @@ module.exports = function (app, router, parse) {
                 method: 'POST'
             }, proxyOption));
         })
+        .get('/service-proxy/buzz/video/info/:video_id', membership.setHcdUserIfSignedIn, function *() {
+            let video_id = this.params.video_id;
+            let member_id = '00000000-0000-0000-0000-000000000000';
+            if (this.state.hcd_user && this.state.hcd_user.member_id) {
+                member_id = this.state.hcd_user.member_id;
+            }
+
+            this.body = yield proxy(Object.assign({
+                path: '/video/path/info/:member_id/:video_id'.replace(':video_id', video_id).replace(':member_id', member_id),
+                method: 'GET'
+            }, proxyOption));
+        })
     ;
 };

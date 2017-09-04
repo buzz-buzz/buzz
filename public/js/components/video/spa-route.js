@@ -8,17 +8,17 @@ angular.module('spaModule')
                 controller: 'videoCtrl',
                 controllerAs: 'videoCtrl'
             })
-            .when('/video-preview/:src', {
+            .when('/video-preview/:video_id', {
                 templateUrl: 'video-preview.html',
                 controller: 'videoPreviewCtrl',
                 controllerAs: 'videoPreviewCtrl'
             })
-            .when('/video-player/:src', {
+            .when('/video-player/:video_id', {
                 templateUrl: 'video-player.html',
                 controller: 'videoPlayerCtrl',
                 controllerAs: 'videoPlayerCtrl'
             })
-            .when('/video-share/:src', {
+            .when('/video-share/:video_id', {
                 templateUrl: 'video-share.html',
                 controller: 'videoShareFriendCtrl',
                 controllerAs: 'videoShareFriendCtrl'
@@ -71,12 +71,6 @@ angular.module('spaModule')
         $scope.uploadAgainTag = false;
         $scope.changeDialogueTag = false;
 
-        function saveUrl(url) {
-            api.get('/service-proxy/buzz/video/save/path/' + url).then(function (res) {
-                console.log(res.data);
-            });
-        }
-
         $scope.uploadVideoToOwnServer = function () {
             var file = document.querySelector('input[id=video-file]').files[0];
 
@@ -94,9 +88,11 @@ angular.module('spaModule')
                 }).then(function (res) {
                     var backUrl = encodeURIComponent(res.data);
                     //bta(res.data) 返回的url，保存在数据库中
-                    saveUrl(btoa(backUrl));
-                    //回传video_path_id 作为参数，传递过去
-                    $location.path('/video-preview/' + backUrl);
+                    api.get('/service-proxy/buzz/video/save/path/' + btoa(backUrl)).then(function (res) {
+                        //回传video_path_id 作为参数，传递过去
+                        //$location.path('/video-preview/' + backUrl + '/' + res.data.video_id);
+                        $location.path('/video-preview/' + res.data.video_id);
+                    });
                 }).catch(function (reason) {
                     $scope.errorMessage = reason.statusText || reason;
                     $scope.uploadAgainTag = true;
@@ -193,11 +189,22 @@ angular.module('spaModule')
                 $scope.loading = false;
             });
     }])
-    .controller('videoPreviewCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', 'videoStatus', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout, videoStatus) {
-        $scope.videoStatus = {
-            description: '',
-            raw: decodeURIComponent($routeParams.src)
-        };
+    .controller('videoPreviewCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', 'videoStatus', 'api', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout, videoStatus, api) {
+        api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
+            .then(function (videoInfo) {
+                $scope.videoStatus = {
+                    description: '',
+                    raw: decodeURIComponent(atob(videoInfo.data.video_path))
+                };
+
+                console.log('=================');
+                console.log($scope.videoStatus.raw);
+
+                angular.element(document).ready(function () {
+                    $scope.$broadcast('//video-info:got', $scope.videoStatus);
+                });
+            });
+
         $scope.$watch('errorMessage', function (newValue, oldValue) {
             if (newValue) {
                 $timeout(function () {
@@ -206,19 +213,15 @@ angular.module('spaModule')
             }
         });
 
-        angular.element(document).ready(function () {
-            $scope.$broadcast('//video-info:got', $scope.videoStatus);
-        });
-
         $scope.tryAgain = function () {
             $location.path('/video');
         };
 
         $scope.sureUpload = function () {
-            $location.path('/video-player/' + btoa(encodeURIComponent(decodeURIComponent($routeParams.src))));
+            $location.path('/video-player/' + $routeParams.video_id);
         };
     }])
-    .controller('videoPlayerCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', '$timeout', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce, $timeout) {
+    .controller('videoPlayerCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce) {
         $scope.hideVideo = false;
 
         function showProcessing() {
@@ -262,39 +265,42 @@ angular.module('spaModule')
 
         function getVideoStatus() {
             $scope.loading = true;
-            videoStatus.get(atob($routeParams.src)).then(function (status) {
-                hideProcessing();
-                hideError();
-                $scope.videoStatus = status;
-                $scope.$broadcast('//video-info:got', status);
-                if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
-                    $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
-                    if ($scope.videoStatus.score > 30) {
-                        showGoodScoreDimmer();
-                        ////service-proxy/buzz/video/status/:member_id/:video_id/:status
-                        //todo：调用api 修改视频状态为 3 处理完成，待审核
-                    } else {
-                        showBadScoreDimmer();
-                        ////service-proxy/buzz/video/status/:member_id/:video_id/:status
-                        //todo：调用api 修改视频状态为 0 offline,下线
-                    }
-                }
-                hideProcessing();
-                hideError();
-            }).catch(function (reason) {
-                if (reason === 'processing') {
-                    showProcessing();
+            //get src
+            api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
+                .then(function (videoInfo) {
+                    videoStatus.get(atob(videoInfo.data.video_path)).then(function (status) {
+                        hideProcessing();
+                        hideError();
+                        $scope.videoStatus = status;
+                        $scope.$broadcast('//video-info:got', status);
+                        if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
+                            $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
+                            if ($scope.videoStatus.score > 30) {
+                                showGoodScoreDimmer();
+                                ////service-proxy/buzz/video/status/:member_id/:video_id/:status
+                                //todo：调用api 修改视频状态为 3 处理完成，待审核
+                            } else {
+                                showBadScoreDimmer();
+                                ////service-proxy/buzz/video/status/:member_id/:video_id/:status
+                                //todo：调用api 修改视频状态为 0 offline,下线
+                            }
+                        }
+                        hideProcessing();
+                        hideError();
+                    }).catch(function (reason) {
+                        if (reason === 'processing') {
+                            showProcessing();
 
-                    $timeout(function () {
-                        getVideoStatus();
-                    }, 15000);
-                } else {
-                    showError();
-                }
-            }).finally(function () {
-                $scope.loading = false;
-            });
-
+                            $timeout(function () {
+                                getVideoStatus();
+                            }, 15000);
+                        } else {
+                            showError();
+                        }
+                    }).finally(function () {
+                        $scope.loading = false;
+                    });
+                });
         }
 
         $scope.closeVideoGrade = function () {
@@ -403,16 +409,24 @@ angular.module('spaModule')
             $scope.hideVideo = true;
         }
 
-        videoStatus.get(atob($routeParams.src)).then(function (status) {
-            $scope.videoStatus = status;
-            $scope.$broadcast('//video-info:got', status);
-        }).catch(function (reason) {
-            if (reason === 'processing') {
-                showProcessing();
-            } else {
-                showError();
-            }
-        });
+        //video_id
+        api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
+            .then(function (videoInfo) {
+                return videoInfo.data.video_path;
+            })
+            .then(function(src){
+                videoStatus.get(atob(src)).then(function (status) {
+                    $scope.videoStatus = status;
+                    $scope.$broadcast('//video-info:got', status);
+                }).catch(function (reason) {
+                    if (reason === 'processing') {
+                        showProcessing();
+                    } else {
+                        showError();
+                    }
+                });
+            });
+
 
         $scope.shareToFriends = function () {
             document.getElementById('video-uploaded').style.opacity = 0;
