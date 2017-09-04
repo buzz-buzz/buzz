@@ -18,7 +18,7 @@ angular.module('spaModule')
                 controller: 'videoPlayerCtrl',
                 controllerAs: 'videoPlayerCtrl'
             })
-            .when('/video-share/:video_id', {
+            .when('/video-share/:video_id/:member_id', {
                 templateUrl: 'video-share.html',
                 controller: 'videoShareFriendCtrl',
                 controllerAs: 'videoShareFriendCtrl'
@@ -345,12 +345,27 @@ angular.module('spaModule')
                 .dimmer('hide');
         };
 
+        var linkUrl = location.href;
+        if(linkUrl.indexOf('video-player') > -1){
+            //获取当前member_id
+            var strCookie = document.cookie;
+            var arrCookie = strCookie.split(";");
+            var member_id = '00000000-0000-0000-0000-000000000000';
+            for (var i = 0; i < arrCookie.length; i++) {
+                var arr = arrCookie[i].split("=");
+                if ("mid" == arr[0]) {
+                    member_id = arr[1];
+                    break;
+                }
+            }
+            linkUrl = linkUrl.replace('video-player', 'video-share') + '/' + member_id
+        }
 
         //share to friends
         var sharable = {
             title: '邀请你看TA的自拍秀',
             desc: '我在Buzzbuzz自拍了英语视频，快来看看吧',
-            link: location.href.replace('video-player', 'video-share'),
+            link: linkUrl,
             imgUrl: 'https://resource.buzzbuzzenglish.com/new_buzz_logo1.png'
         };
 
@@ -410,21 +425,25 @@ angular.module('spaModule')
         }
 
         //video_id
-        api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
+        api.get('/service-proxy/buzz/video/info/:video_id/:member_id'.replace(':video_id', $routeParams.video_id).replace(':member_id', $routeParams.member_id))
             .then(function (videoInfo) {
                 return videoInfo.data.video_path;
             })
             .then(function(src){
-                videoStatus.get(atob(src)).then(function (status) {
-                    $scope.videoStatus = status;
-                    $scope.$broadcast('//video-info:got', status);
-                }).catch(function (reason) {
-                    if (reason === 'processing') {
-                        showProcessing();
-                    } else {
-                        showError();
-                    }
-                });
+                if(!src){
+                    showError();
+                }else{
+                    videoStatus.get(atob(src)).then(function (status) {
+                        $scope.videoStatus = status;
+                        $scope.$broadcast('//video-info:got', status);
+                    }).catch(function (reason) {
+                        if (reason === 'processing') {
+                            showProcessing();
+                        } else {
+                            showError();
+                        }
+                    });
+                }
             });
 
 
