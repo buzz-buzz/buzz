@@ -268,38 +268,42 @@ angular.module('spaModule')
             //get src
             api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
                 .then(function (videoInfo) {
-                    videoStatus.get(atob(videoInfo.data.video_path)).then(function (status) {
-                        hideProcessing();
-                        hideError();
-                        $scope.videoStatus = status;
-                        $scope.$broadcast('//video-info:got', status);
-                        if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
-                            $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
-                            if ($scope.videoStatus.score > 30) {
-                                showGoodScoreDimmer();
-                                ////service-proxy/buzz/video/status/:member_id/:video_id/:status
-                                //todo：调用api 修改视频状态为 3 处理完成，待审核
-                            } else {
-                                showBadScoreDimmer();
-                                ////service-proxy/buzz/video/status/:member_id/:video_id/:status
-                                //todo：调用api 修改视频状态为 0 offline,下线
+                    if(videoInfo.data.video_path){
+                        videoStatus.get(atob(videoInfo.data.video_path)).then(function (status) {
+                            hideProcessing();
+                            hideError();
+                            $scope.videoStatus = status;
+                            $scope.$broadcast('//video-info:got', status);
+                            if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
+                                $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
+                                if ($scope.videoStatus.score > 30) {
+                                    showGoodScoreDimmer();
+                                    ////service-proxy/buzz/video/status/:member_id/:video_id/:status
+                                    //todo：调用api 修改视频状态为 3 处理完成，待审核
+                                } else {
+                                    showBadScoreDimmer();
+                                    ////service-proxy/buzz/video/status/:member_id/:video_id/:status
+                                    //todo：调用api 修改视频状态为 0 offline,下线
+                                }
                             }
-                        }
-                        hideProcessing();
-                        hideError();
-                    }).catch(function (reason) {
-                        if (reason === 'processing') {
-                            showProcessing();
+                            hideProcessing();
+                            hideError();
+                        }).catch(function (reason) {
+                            if (reason === 'processing') {
+                                showProcessing();
 
-                            $timeout(function () {
-                                getVideoStatus();
-                            }, 15000);
-                        } else {
-                            showError();
-                        }
-                    }).finally(function () {
-                        $scope.loading = false;
-                    });
+                                $timeout(function () {
+                                    getVideoStatus();
+                                }, 15000);
+                            } else {
+                                showError();
+                            }
+                        }).finally(function () {
+                            $scope.loading = false;
+                        });
+                    }else{
+                        showError();
+                    }
                 });
         }
 
