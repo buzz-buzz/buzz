@@ -5,7 +5,7 @@ angular.module('spaModule', [
         'accountModule',
         'buzzHistoryModule'
     ])
-    .run(['$rootScope', '$location', function ($rootScope, $location, ) {
+    .run(['$rootScope', '$location', function ($rootScope, $location) {
         $rootScope.$on('$routeChangeSuccess', function (ev, current, previous) {
             $rootScope.back = function ($event) {
                 $event.preventDefault();

@@ -62,7 +62,7 @@ angular.module('videoParserModule', [])
                 }
 
                 var dialogues = events[1].split(/[\r\n]/).filter(function (d) {
-                    return d && d.indexOf('Format') < 0;
+                    return d && d.indexOf('Format') < 0 && d.trim() !== '';
                 });
 
                 var res = [];
