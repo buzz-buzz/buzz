@@ -6,7 +6,7 @@ angular.module('spaModule', [
         'buzzHistoryModule'
     ])
     .run(['$rootScope', '$location', function ($rootScope, $location) {
-        $rootScope.$on('$routeChangeSuccess', function (ev, current, previous) {
+        $rootScope.$on('$routeChangeSuccess', function (ev) {
             $rootScope.back = function ($event) {
                 $event.preventDefault();
                 $event.stopPropagation();

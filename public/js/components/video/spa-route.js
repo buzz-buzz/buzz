@@ -248,7 +248,7 @@ angular.module('spaModule')
             $timeout(function () {
                 $('#dimmer-good-score').dimmer('show');
                 $scope.hideVideo = true;
-            }, 100);
+            }, 1000);
         }
 
         function hideGoodScoreDimmer() {
@@ -463,15 +463,13 @@ angular.module('spaModule')
         };
     }])
     .controller('jwPlayerCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout) {
+        // var screenH = document.documentElement.clientHeight;
+        // var screenW = document.documentElement.clientWidth;
+        // var videoH = document.getElementById('video-uploaded').offsetHeight;
+        // // var videoW = document.getElementById('video-uploaded').offsetWidth;
         $scope.$on('//video-info:got', function (event, status) {
-            var h = document.querySelector('#video-uploaded').offsetHeight;
-
-            if (h <= 0) {
-                h = '164px';
-            }
-
             var options = {
-                height: h,
+                height: 420,
                 width: '100%',
                 playlist: [{
                     description: status.description,

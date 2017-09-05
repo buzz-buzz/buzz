@@ -5,9 +5,5 @@ script(type="text/ng-template", id="video-player.html")
         p(style='font-size: 20px; margin: 1rem 0; font-family:"HYxindipaofu"') 以下是您已录制完成的视频 :
 
         include video-angular
-        .ui.share-friend(style='margin-top: 2rem;')
-            button.btn.center-block(ng-click='shareToFriends()', style='font-size: 20px; background-color: #f7b52a; color: #fff; font-family:"HYxindipaofu"') 分享给朋友
-            br
-            button.btn.center-block(ng-click='gotoVideoRecord()', style='font-size: 20px; background-color: #f7b52a; color: #fff; font-family:"HYxindipaofu"') 再录一个
     include ./video-dimmers
     include ./wechat-share
