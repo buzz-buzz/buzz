@@ -50,6 +50,7 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
+                        status.status = 'done';
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -268,7 +269,7 @@ angular.module('spaModule')
             //get src
             api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
                 .then(function (videoInfo) {
-                    if(videoInfo.data.video_path){
+                    if (videoInfo.data.video_path) {
                         videoStatus.get(atob(videoInfo.data.video_path)).then(function (status) {
                             hideProcessing();
                             hideError();
@@ -301,7 +302,7 @@ angular.module('spaModule')
                         }).finally(function () {
                             $scope.loading = false;
                         });
-                    }else{
+                    } else {
                         showError();
                     }
                 });
@@ -350,7 +351,7 @@ angular.module('spaModule')
         };
 
         var linkUrl = location.href;
-        if(linkUrl.indexOf('video-player') > -1){
+        if (linkUrl.indexOf('video-player') > -1) {
             //获取当前member_id
             var strCookie = document.cookie;
             var arrCookie = strCookie.split(";");
@@ -433,10 +434,10 @@ angular.module('spaModule')
             .then(function (videoInfo) {
                 return videoInfo.data.video_path;
             })
-            .then(function(src){
-                if(!src){
+            .then(function (src) {
+                if (!src) {
                     showError();
-                }else{
+                } else {
                     videoStatus.get(atob(src)).then(function (status) {
                         $scope.videoStatus = status;
                         $scope.$broadcast('//video-info:got', status);
@@ -463,14 +464,10 @@ angular.module('spaModule')
         };
     }])
     .controller('jwPlayerCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout) {
-        // var screenH = document.documentElement.clientHeight;
-        // var screenW = document.documentElement.clientWidth;
-        // var videoH = document.getElementById('video-uploaded').offsetHeight;
-        // // var videoW = document.getElementById('video-uploaded').offsetWidth;
         $scope.$on('//video-info:got', function (event, status) {
             var options = {
-                height: 420,
                 width: '100%',
+                aspectratio: '25:34',
                 playlist: [{
                     description: status.description,
                     image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
