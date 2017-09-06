@@ -14,15 +14,15 @@ const proxyOption = {
 module.exports = function (app, router, parse) {
     router
         .get('/service-proxy/video/playable', membership.setHcdUserIfSignedIn, video.playable)
-        .get('/service-proxy/buzz/video/subtitle-list', membership.setHcdUserIfSignedIn, function*() {
+        .get('/service-proxy/buzz/video/subtitle-list', membership.setHcdUserIfSignedIn, function* () {
             this.body = yield proxy(Object.assign({
                 path: '/video/subtitle-list',
                 method: 'GET'
             }, proxyOption));
         })
-        .get('/service-proxy/buzz/video/path/:page_size/:pageState?', membership.setHcdUserIfSignedIn, function *() {
+        .get('/service-proxy/buzz/video/path/:page_size/:pageState?', membership.setHcdUserIfSignedIn, function* () {
             let pageState = '';
-            if(this.params.pageState){
+            if (this.params.pageState) {
                 pageState = this.params.pageState;
             }
             let member_id = '00000000-0000-0000-0000-000000000000';
@@ -36,7 +36,7 @@ module.exports = function (app, router, parse) {
                 method: 'GET'
             }, proxyOption));
         })
-        .get('/service-proxy/buzz/video/save/path/:path', membership.setHcdUserIfSignedIn, function *() {
+        .get('/service-proxy/buzz/video/save/path/:path', membership.setHcdUserIfSignedIn, function* () {
             //video/path/:member_id/:path  新增
             let path = this.params.path;
             let member_id = '00000000-0000-0000-0000-000000000000';
@@ -49,7 +49,7 @@ module.exports = function (app, router, parse) {
                 method: 'POST'
             }, proxyOption));
         })
-        .get('/service-proxy/buzz/video/status/:member_id/:video_id/:status', membership.setHcdUserIfSignedIn, function *() {
+        .get('/service-proxy/buzz/video/status/:member_id/:video_id/:status', membership.setHcdUserIfSignedIn, function* () {
             let video_id = this.params.video_id;
             let status = this.params.status;
             let member_id = '00000000-0000-0000-0000-000000000000';
@@ -63,19 +63,23 @@ module.exports = function (app, router, parse) {
                 method: 'POST'
             }, proxyOption));
         })
-        .get('/service-proxy/buzz/video/info/:video_id/:member_id?', membership.setHcdUserIfSignedIn, function *() {
+        .get('/service-proxy/buzz/video/info/:video_id/:member_id?', membership.setHcdUserIfSignedIn, function* () {
             let video_id = this.params.video_id;
             let member_id = '00000000-0000-0000-0000-000000000000';
-            if(this.params.member_id){
+            if (this.params.member_id) {
                 member_id = this.params.member_id;
-            }else if (this.state.hcd_user && this.state.hcd_user.member_id) {
+            } else if (this.state.hcd_user && this.state.hcd_user.member_id) {
                 member_id = this.state.hcd_user.member_id;
             }
 
+            let path = Router.url('/video/path/info/:member_id/:video_id', {
+                member_id: member_id,
+                video_id: video_id
+            });
+
             this.body = yield proxy(Object.assign({
-                path: '/video/path/info/:member_id/:video_id'.replace(':video_id', video_id).replace(':member_id', member_id),
+                path: path,
                 method: 'GET'
             }, proxyOption));
-        })
-    ;
+        });
 };
