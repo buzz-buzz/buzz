@@ -456,7 +456,8 @@ angular.module('spaModule')
         };
 
         $scope.playVideo = function () {
-            $location.path('/video');
+            //$location.path('/video');
+            location.href = '/video';
         };
     }])
     .controller('jwPlayerCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', '$q', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout, $q) {

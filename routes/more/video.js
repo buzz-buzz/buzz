@@ -13,6 +13,7 @@ const exec = require('child_process').exec;
 const stream = require('koa-stream');
 const greenSharedLogger = require('../../common/logger')('/routes/more/video.js');
 const videoBll = require('../../bll/video');
+const membership = require('../../membership');
 
 function yieldableExec(command) {
     return function (cb) {
@@ -70,7 +71,7 @@ module.exports = function (app, router, render, server) {
     }
 
     router
-        .get('/video', saas.checkSaasReferer, renderVideoSPA)
+        .get('/video', saas.checkSaasReferer, membership.ensureAuthenticated, renderVideoSPA)
         .get('/video-player/:video_id', saas.checkSaasReferer, renderVideoSPA)
         .get('/video-preview/:video_id', saas.checkSaasReferer, renderVideoSPA)
         .get('/video-share/:video_id/:member_id', saas.checkSaasReferer, renderVideoSPA)
