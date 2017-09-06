@@ -197,9 +197,6 @@ angular.module('spaModule')
                     raw: decodeURIComponent(atob(videoInfo.data.video_path))
                 };
 
-                console.log('=================');
-                console.log($scope.videoStatus.raw);
-
                 angular.element(document).ready(function () {
                     $scope.$broadcast('//video-info:got', $scope.videoStatus);
                 });
@@ -462,11 +459,28 @@ angular.module('spaModule')
             $location.path('/video');
         };
     }])
-    .controller('jwPlayerCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout) {
-        $scope.$on('//video-info:got', function (event, status) {
+    .controller('jwPlayerCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', '$q', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout, $q) {
+        function onLoadedMetaData() {
+            var dfd = $q.defer();
+
+            $('#video-uploaded').bind('loadedmetadata', function () {
+                dfd.resolve(this);
+            });
+
+            $('#video-uploaded').bind('onprogress', function () {
+                dfd.notify();
+            });
+
+            return dfd.promise;
+        }
+
+        $q.all([videoInfoGet(), onLoadedMetaData()]).then(function (results) {
+            var status = results[0];
+            var metaData = results[1];
+            
             var options = {
                 width: '100%',
-                aspectratio: '25:34',
+                aspectratio: metaData.videoWidth + ':' + metaData.videoHeight,
                 playlist: [{
                     description: status.description,
                     image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
@@ -509,6 +523,13 @@ angular.module('spaModule')
                 });
             }
             var videoPlayer = jwplayer('video-uploaded').setup(options);
-        });
+        })
 
+        function videoInfoGet() {
+            var dfd = $q.defer();
+            $scope.$on('//video-info:got', function (event, status) {
+                dfd.resolve(status);
+            })
+            return dfd.promise;
+        }
     }]);
