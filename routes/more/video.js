@@ -125,6 +125,15 @@ module.exports = function (app, router, render, server) {
         })
         .get('/videos/:path', function* (next) {
             let fpath = new Buffer(this.params.path.replace('.mp4', '').replace('.vtt', ''), 'base64').toString();
+
+            if (fpath.endsWith('.mp4') && !fs.existsSync(fpath)) {
+                fpath = fpath.replace('.mp4', '.MOV');
+            }
+
+            if (fpath.endsWith('.MOV') && !fs.existsSync(fpath)) {
+                fpath = fpath.replace('.MOV', '.mp4');
+            }
+
             let fstat = fs.statSync(fpath);
 
             if (fstat.isFile()) {
