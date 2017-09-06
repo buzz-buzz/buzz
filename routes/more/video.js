@@ -135,19 +135,24 @@ module.exports = function (app, router, render, server) {
                 fpath = fpath.replace('.MOV', '.mp4');
             }
 
-            let fstat = fs.statSync(fpath);
+            try {
+                let fstat = fs.statSync(fpath);
 
-            if (fstat.isFile()) {
-                // this.set('Content-disposition', `inline; filename=${path.basename(fpath)}`);
-                // this.set('Content-Transfer-Encoding', 'binary');
-                // this.type = extname(fpath);
-                // this.body = fs.createReadStream(fpath);
-                yield stream.file(this, path.basename(fpath), {
-                    root: path.dirname(fpath),
-                    allowDownload: true
-                });
-            } else {
-                this.body = `${fpath} is not a file or is deleted`;
+                if (fstat.isFile()) {
+                    // this.set('Content-disposition', `inline; filename=${path.basename(fpath)}`);
+                    // this.set('Content-Transfer-Encoding', 'binary');
+                    // this.type = extname(fpath);
+                    // this.body = fs.createReadStream(fpath);
+                    yield stream.file(this, path.basename(fpath), {
+                        root: path.dirname(fpath),
+                        allowDownload: true
+                    });
+                } else {
+                    this.body = `${fpath} is not a file or is deleted`;
+                }
+            } catch (ex) {
+                greenSharedLogger.error(`Couldn't handle this file: ${fpath}`);
+                this.throw(ex);
             }
         });
 };
