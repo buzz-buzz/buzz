@@ -50,7 +50,6 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
-                        status.status = 'done';
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
