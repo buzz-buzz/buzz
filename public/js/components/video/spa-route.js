@@ -477,7 +477,7 @@ angular.module('spaModule')
         $q.all([videoInfoGet(), onLoadedMetaData()]).then(function (results) {
             var status = results[0];
             var metaData = results[1];
-            
+
             var options = {
                 width: '100%',
                 aspectratio: metaData.videoWidth + ':' + metaData.videoHeight,
