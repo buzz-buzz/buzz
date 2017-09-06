@@ -218,7 +218,7 @@ angular.module('spaModule')
             $location.path('/video-player/' + $routeParams.video_id);
         };
     }])
-    .controller('videoPlayerCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce) {
+    .controller('videoPlayerCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', '$q', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce, $q) {
         $scope.hideVideo = false;
 
         function showProcessing() {
@@ -329,6 +329,12 @@ angular.module('spaModule')
         };
 
         getVideoStatus();
+        $scope.$on('//video-player:got', function (event, videoPlayer) {
+            videoPlayer.onPlay(function () {
+                $('#video-title').css("display", "none");
+                $('#cue').css("display", "none");
+            })
+        })
 
         $scope.refreshStatus = getVideoStatus;
         $scope.$watch('hideVideo', function (newVal, oldVal) {
@@ -524,6 +530,7 @@ angular.module('spaModule')
                 });
             }
             var videoPlayer = jwplayer('video-uploaded').setup(options);
+            $scope.$emit('//video-player:got', videoPlayer)
         })
 
         function videoInfoGet() {
@@ -533,4 +540,5 @@ angular.module('spaModule')
             })
             return dfd.promise;
         }
+
     }]);
