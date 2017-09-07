@@ -45,7 +45,9 @@ angular.module('wechatShareModule', ['clientConfigModule', 'buzzHeaderModule'])
                 nonceStr: result.data.nonceStr, // 必填，生成签名的随机串
                 signature: result.data.signature, // 必填，签名，见附录1
                 jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-            });
+            })
+
+            window.wechatSigned = true;
 
             function shareToTimelineSuccess(result) {
                 if (result.errMsg === 'shareTimeline:ok') {
@@ -78,7 +80,6 @@ angular.module('wechatShareModule', ['clientConfigModule', 'buzzHeaderModule'])
             }
 
             weixin.ready().then(function () {
-                console.log('weixin ready');
                 wx.onMenuShareTimeline(angular.extend({}, sharable, {
                     success: shareToTimelineSuccess,
                     cancel: shareToTimelineCancel,
@@ -89,51 +90,42 @@ angular.module('wechatShareModule', ['clientConfigModule', 'buzzHeaderModule'])
                     success: shareToFriendSuccess,
                     cancel: shareToFriendCancel
                 }));
-
-                $rootScope.$emit('wx:ready', sharable);
             });
         });
     }])
     .factory('weixin', ['$q', function ($q) {
         return {
             ready: function () {
-                console.log('check wx');
                 var dfd = $q.defer();
 
                 if (navigator.userAgent.indexOf('wechat') < 0) {
-                    console.log('userAgent');
                     dfd.reject();
                     return dfd.promise;
                 }
 
                 if (typeof wx === 'undefined') {
-                    console.log('wx not defined');
                     dfd.reject();
                     return dfd.promise;
                 }
 
                 if (wx.errorHappened) {
-                    console.log('error happened');
                     dfd.reject();
                     return dfd.promise;
                 }
 
                 wx.error(function () {
                     wx.errorHappened = true;
-                    console.log('error');
                     dfd.reject();
                 });
 
                 wx.ready(function () {
-                    console.log('ready');
                     if (wx.errorHappened) {
                         dfd.reject();
                     } else {
                         dfd.resolve();
                     }
                 });
-
-                console.log('return with ', dfd);
+                
                 return dfd.promise;
             }
         };
