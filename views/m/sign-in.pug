@@ -116,4 +116,4 @@ body
             a.forget(href="/reset-password") 忘记密码？
             a.signup(ng-href="/sign-up{{queryString}}") 新用户注册
     include ../js
-    script(src=`${config.cdn}/public/js/signInModule.min.js?${config.version}`)
+    +js ('/public/js/signInModule.min.js')

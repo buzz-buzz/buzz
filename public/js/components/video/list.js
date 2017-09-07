@@ -7,7 +7,7 @@ angular.module('spaModule')
                 controllerAs: 'videoListCtrl'
             });
     }])
-    .controller('videoListCtrl', ['$scope', '$http', '$rootScope', '$anchorScroll', '$filter', function ($scope, $http, $rootScope, $anchorScroll, $filter) {
+    .controller('videoListCtrl', ['$scope', '$http', '$rootScope', '$anchorScroll', '$filter', '$location', function ($scope, $http, $rootScope, $anchorScroll, $filter, $location) {
         $scope.index = 1;
         $scope.videoLength = 10;
         $scope.more = true;
@@ -25,16 +25,17 @@ angular.module('spaModule')
             // });
             $http.get('/service-proxy/buzz/video/path/:page_size/:pageState?'.replace(':page_size', pageSize).replace(':pageState?', pageState))
                 .then(function (result) {
-                    if(result.data && result.data.rows && result.data.rows.length >= 1){
-                        for(var i in result.data.rows){
+                    if (result.data && result.data.rows && result.data.rows.length >= 1) {
+                        for (var i in result.data.rows) {
                             var upload_time = result.data.rows[i].upload_time;
                             result.data.rows[i].upload_time = $filter('date')(upload_time, 'yyyy-MM-dd HH:mm:ss');
                             $scope.videos.push(result.data.rows[i]);
                         }
+                        $scope.videoList = false;
                     }
-
                     if (!result.data.pageState || result.data.rows.length < pageSize) {
                         $scope.more = false;
+                        $scope.videoList = true;
                     }
                     if ($scope.videos.length > 6) {
                         $scope.top = true;
@@ -44,7 +45,6 @@ angular.module('spaModule')
                     $scope.index++;
                 });
         }
-
         //load more
         $scope.loadMore = function () {
             getVideoData($scope.pageSize, $scope.pageState);
@@ -55,4 +55,7 @@ angular.module('spaModule')
         $rootScope.toTop = function () {
             $anchorScroll('top');
         };
+        $scope.goToVideo = function () {
+            $location.path('/video');
+        }
     }]);
