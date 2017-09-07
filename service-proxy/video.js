@@ -36,17 +36,21 @@ module.exports = function (app, router, parse) {
                 method: 'GET'
             }, proxyOption));
         })
-        .get('/service-proxy/buzz/video/save/path/:path', membership.setHcdUserIfSignedIn, function* () {
+        .post('/service-proxy/buzz/video/save/path/:path', membership.setHcdUserIfSignedIn, function* () {
             //video/path/:member_id/:path  新增
             let path = this.params.path;
             let member_id = '00000000-0000-0000-0000-000000000000';
+            let data = yield parse(this.request);
             if (this.state.hcd_user && this.state.hcd_user.member_id) {
                 member_id = this.state.hcd_user.member_id;
             }
 
             this.body = yield proxy(Object.assign({
                 path: '/video/path/:member_id/:path'.replace(':member_id', member_id).replace(':path', path),
-                method: 'POST'
+                method: 'POST',
+                data: {
+                    dialogue: data.dialogue
+                }
             }, proxyOption));
         })
         .get('/service-proxy/buzz/video/status/:member_id/:video_id/:status', membership.setHcdUserIfSignedIn, function* () {
