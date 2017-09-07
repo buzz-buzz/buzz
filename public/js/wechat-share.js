@@ -1,5 +1,5 @@
 angular.module('wechatShareModule', ['clientConfigModule', 'buzzHeaderModule'])
-    .run(['$rootScope', '$http', 'clientConfig', function ($rootScope, $http, clientConfig) {
+    .run(['$rootScope', '$http', 'clientConfig', 'weixin', function ($rootScope, $http, clientConfig, weixin) {
         var index = location.href.indexOf('#');
         if (index < 0) {
             index = undefined;
@@ -77,7 +77,8 @@ angular.module('wechatShareModule', ['clientConfigModule', 'buzzHeaderModule'])
                 } else {}
             }
 
-            wx.ready(function () {
+            weixin.ready().then(function () {
+                console.log('weixin ready');
                 wx.onMenuShareTimeline(angular.extend({}, sharable, {
                     success: shareToTimelineSuccess,
                     cancel: shareToTimelineCancel,
@@ -90,11 +91,50 @@ angular.module('wechatShareModule', ['clientConfigModule', 'buzzHeaderModule'])
                 }));
 
                 $rootScope.$emit('wx:ready', sharable);
-                wx.isReady = true;
-            });
-
-            wx.error(function (res) {
-                console.error(res);
             });
         });
+    }])
+    .factory('weixin', ['$q', function ($q) {
+        return {
+            ready: function () {
+                console.log('check wx');
+                var dfd = $q.defer();
+
+                if (navigator.userAgent.indexOf('wechat') < 0) {
+                    console.log('userAgent');
+                    dfd.reject();
+                    return dfd.promise;
+                }
+
+                if (typeof wx === 'undefined') {
+                    console.log('wx not defined');
+                    dfd.reject();
+                    return dfd.promise;
+                }
+
+                if (wx.errorHappened) {
+                    console.log('error happened');
+                    dfd.reject();
+                    return dfd.promise;
+                }
+
+                wx.error(function () {
+                    wx.errorHappened = true;
+                    console.log('error');
+                    dfd.reject();
+                });
+
+                wx.ready(function () {
+                    console.log('ready');
+                    if (wx.errorHappened) {
+                        dfd.reject();
+                    } else {
+                        dfd.resolve();
+                    }
+                });
+
+                console.log('return with ', dfd);
+                return dfd.promise;
+            }
+        };
     }]);

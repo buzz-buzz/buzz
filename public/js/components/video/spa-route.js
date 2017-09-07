@@ -50,6 +50,7 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
+                        status.status = 'done';
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -218,7 +219,7 @@ angular.module('spaModule')
             $location.path('/video-player/' + $routeParams.video_id);
         };
     }])
-    .controller('videoPlayerCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', '$q', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce, $q) {
+    .controller('videoPlayerCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', '$q', 'weixin', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce, $q, weixin) {
         $scope.hideVideo = false;
 
         function showProcessing() {
@@ -318,12 +319,26 @@ angular.module('spaModule')
         };
 
         $scope.shareToFriends = function () {
-            document.getElementById('video-uploaded').style.opacity = '0';
-            $('#dimmer-video').dimmer({
-                closable: false
-            }).dimmer('show');
+            $scope.loading = true;
+            angular.element(document).ready(function () {
+                weixin.ready()
+                    .then(function () {
+                        $scope.loading = false;
+                        document.getElementById('video-uploaded').style.opacity = '0';
+                        $('#dimmer-video').dimmer({
+                            closable: false
+                        }).dimmer('show');
+                    }).catch(function () {
+                        $scope.loading = false;
+                        alert('微信接口调用失败，请刷新页面重试。');
+                    });
+            })
         };
-
+        $scope.closeDimmer = function () {
+            document.getElementById('video-uploaded').style.opacity = '1';
+            $('#dimmer-video')
+                .dimmer('hide');
+        };
         $scope.gotoVideoRecord = function () {
             $location.path('/video');
         };
@@ -345,13 +360,7 @@ angular.module('spaModule')
             }
         });
     }])
-    .controller('videoShareCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', '$q', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, $q) {
-        $scope.closeDimmer = function () {
-            document.getElementById('video-uploaded').style.opacity = '1';
-            $('#dimmer-video')
-                .dimmer('hide');
-        };
-
+    .controller('videoShareCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', '$q', 'weixin', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, $q, weixin) {
         var linkUrl = location.href;
         if (linkUrl.indexOf('video-player') > -1) {
             //获取当前member_id
@@ -376,28 +385,16 @@ angular.module('spaModule')
             imgUrl: 'https://resource.buzzbuzzenglish.com/new_buzz_logo1.png'
         };
 
-        function wxReady() {
-            var dfd = $q.defer();
-
-            if (wx.isReady) {
-                dfd.resolve();
-            }
-
-            wx.ready(function () {
-                dfd.resolve();
-            });
-
-            return dfd.promise;
-        }
-
         function wechatSharable(sharable) {
             try {
-                wxReady().then(function () {
+                weixin.ready().then(function () {
                     wx.onMenuShareTimeline(angular.extend({}, sharable, {
                         title: sharable.title + ' ' + sharable.desc
                     }));
 
                     wx.onMenuShareAppMessage(angular.extend({}, sharable));
+
+
                 });
             } catch (ex) {
                 console.error(ex);
@@ -408,10 +405,11 @@ angular.module('spaModule')
 
         function handleProfile(event, profile) {
             if (profile) {
+
                 sharable.link = sharable.link + '?trk_tag=' + profile.invite_code;
                 sharable.title = profile.display_name + sharable.title;
             }
-
+            console.log(sharable);
             wechatSharable(sharable);
         }
 

@@ -28,7 +28,7 @@ angular.module('spaModule', [
     }])
     .controller('surveyCtrl', ['$scope', '$rootScope', '$http', '$timeout', function ($scope, $rootScope, $http, $timeout) {
     }])
-    .controller('surveyShareCtrl', ['$scope', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', '$q', function ($scope, $rootScope, $http, clientConfig, $timeout, api, $q) {
+    .controller('surveyShareCtrl', ['$scope', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', '$q', 'weixin', function ($scope, $rootScope, $http, clientConfig, $timeout, api, $q, weixin) {
         var strCookie = document.cookie;
         var arrCookie = strCookie.split(";");
         var member_id;
@@ -53,27 +53,13 @@ angular.module('spaModule', [
                 };
                 $rootScope.wechatSharable = sharable;
 
-                function wxReady() {
-                    var dfd = $q.defer();
-
-                    if (wx.isReady) {
-                        dfd.resolve();
-                    }
-
-                    wx.ready(function () {
-                        dfd.resolve();
-                    });
-
-                    return dfd.promise;
-                }
-
                 function wechatSharable(sharable) {
                     try {
                         console.log("CTRL");
                         $rootScope.wechatSharable.desc = sharable.desc;
                         $rootScope.wechatSharable.title = sharable.title;
 
-                        wxReady().then(function () {
+                        weixin.ready().then(function () {
                             console.log("=======");
 
                             wx.onMenuShareTimeline(angular.extend({}, $rootScope.wechatSharable, {

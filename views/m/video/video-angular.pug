@@ -3,7 +3,7 @@ div(ng-controller="jwPlayerCtrl", style='position: relative;')
         track(ng-src="{{videoStatus.vtt}}", label="English", kind="subtitles", srclang="en", default)
     .video-navbar(style="position: absolute; right: -3%; top: 50%; margin-top: -50px; width:17%;")
         a.btn.btn-navbar.active(style='font-size: 150%;', ng-click="shareToFriends()", ng-show="videoStatus.status === 'done'")
-            i.share.icon
+            i.share.icon(ng-class="{'loading': loading}")
         a.btn.btn-navbar.active(href='/video', style="line-height: initial; text-align: center;", ng-show="videoStatus.status === 'done'" )
             i.huge.icons(style="font-size: 110%;")
                 i.big.thin.circle.icon

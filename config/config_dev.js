@@ -82,5 +82,6 @@ module.exports = {
 
     admins: ['6c003a7a-08cf-4f02-8f5b-4d23ee70f8a0'],
 
-    debug: true
+    debug: true,
+    port: 80,
 };

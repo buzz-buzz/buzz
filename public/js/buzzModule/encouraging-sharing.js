@@ -1,32 +1,28 @@
 angular.module('buzzModule')
-    .controller('sharingCtrl', ['$scope', '$rootScope', '$q', 'api', 'clientConfig', function ($scope, $rootScope, $q, api, clientConfig) {
-        function wxReady() {
-            var dfd = $q.defer();
-
-            if (wx.isReady) {
-                dfd.resolve();
-            }
-
-            wx.ready(function () {
-                dfd.resolve();
-            });
-
-            return dfd.promise;
-        }
-
+    .controller('sharingCtrl', ['$scope', '$rootScope', '$q', 'api', 'clientConfig', 'weixin', function ($scope, $rootScope, $q, api, clientConfig, weixin) {
         function wechatSharable(videoData, lessonCount, vocabularyCount) {
+            console.log('hello', arguments);
             try {
                 $rootScope.wechatSharable.desc = '第 ' + $scope.buzzDays + ' 天，看 ' + lessonCount + ' 条新闻，学 ' + vocabularyCount + ' 个单词。每天15分钟，学英语读世界！';
 
-                wxReady().then(function () {
-                    wx.onMenuShareTimeline(angular.extend({}, $rootScope.wechatSharable, {
-                        title: $rootScope.wechatSharable.title + ' ' + $rootScope.wechatSharable.desc
-                    }));
+                console.log('try sharing');
+                angular.element(document).ready(function () {
+                    weixin.ready()
+                        .then(function () {
+                            console.log('then');
+                            wx.onMenuShareTimeline(angular.extend({}, $rootScope.wechatSharable, {
+                                title: $rootScope.wechatSharable.title + ' ' + $rootScope.wechatSharable.desc
+                            }));
 
-                    wx.onMenuShareAppMessage(angular.extend({}, $rootScope.wechatSharable));
-                });
+                            wx.onMenuShareAppMessage(angular.extend({}, $rootScope.wechatSharable));
+                        })
+                        .catch(function (error) {
+                            console.log('catch');
+                            console.error(error);
+                        });
+                    $scope.videoData = videoData;
+                })
 
-                $scope.videoData = videoData;
             } catch (ex) {
                 console.error(ex);
             }
@@ -72,16 +68,14 @@ angular.module('buzzModule')
             return api.get(clientConfig.serviceUrls.buzz.memberCourse.count.frontEnd)
                 .then(function (result) {
                     return result.data;
-                })
-                ;
+                });
         }
 
         function getVocabularyCount() {
             return api.get(clientConfig.serviceUrls.buzz.profile.memberVocabulary.correct.frontEnd)
                 .then(function (result) {
                     return result.data;
-                })
-                ;
+                });
         }
 
         $q.all([getVideoData(), getProfile(), getLessonCount(), getVocabularyCount()]).then(function (results) {
@@ -95,5 +89,4 @@ angular.module('buzzModule')
     .component('sharing', {
         templateUrl: '/js/buzzModule/sharing.html',
         bindings: {}
-    })
-    ;
+    });
