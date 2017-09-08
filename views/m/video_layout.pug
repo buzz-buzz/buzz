@@ -36,13 +36,8 @@ html(manifest="/buzz2.appcache")
         block content
         include ../js
         + js("/js/buzzHeaderModule.min.js")
+        + js("/js/buzzFooterModule.min.js")
         script.
-            angular.module('buzzFooterModule', [])
-                .run(['$rootScope', function($rootScope){
-                    $rootScope.location = location;
-                }])
-            ;
-
             angular.element(document).ready(function () {
                 angular.bootstrap(document.getElementById('buzz-header'), ['buzzHeaderModule']);
                 angular.bootstrap(document.getElementById('buzz-footer'), ['buzzFooterModule']);

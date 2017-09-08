@@ -7,15 +7,29 @@ html(manifest="/buzz2.appcache")
     meta(name="viewport", content="width=375, user-scalable=no")
     title='Buzzbuzz English'
     + css("/public/css/style.min.css", true)
+    + css("/public/css/semantic-ui/semantic.min.css")
+    + css("/public/css/my/layout.min.css")
+      <!-- Only required for desktop -->
+    + css("/node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-hover.min.css")
+
+    <!-- Always required -->
+    + css("/node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-base.min.css")
+
+    <!-- Only required for desktop -->
+    + css("/node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-desktop.min.css")
     style.
         .init {
             display: none;
+        }
+        html {
+            font-size: 16px!important;
         }
 
         body {
             margin: 0;
             font-family: "微软雅黑", "Helvetica Neue", Helvetica, Arial, sans-serif;
             color: #333;
+            font-size: medium;
         }
 
         .body {
@@ -24,6 +38,8 @@ html(manifest="/buzz2.appcache")
         }
 
         .row {
+            margin:0 !important;
+            padding:0 !important;
             display: block;
             position: relative;
             width: 100%;
@@ -54,8 +70,8 @@ html(manifest="/buzz2.appcache")
             height: 5.4rem;
             line-height: 5.4rem;
             color: #333333;
-            margin-top: 1.2rem;
-            padding-left: 1rem;
+            margin-top: 1.2rem !important;
+            padding-left: 1rem !important;
             border-top: solid 1px #e8e8e8;
             border-bottom: solid 1px #e8e8e8;
             box-sizing: border-box;
@@ -79,7 +95,7 @@ html(manifest="/buzz2.appcache")
 
         .bar.stackable {
             border-top: none;
-            margin-top: 0;
+            margin-top: 0 !important;
         }
 
         .bar.notch:before {
@@ -334,8 +350,7 @@ html(manifest="/buzz2.appcache")
                         + mobileForm
                             .field
                                 button.fluid.yellow.button(type="submit", ng-disabled="!signUpForm.$valid") 确定
-    include ../tail.pug
-    + tailcontent(false, false, false, true)
+    include partials/footer.pug
     include qrcode
     include invite
     include ../../js
@@ -350,8 +365,11 @@ html(manifest="/buzz2.appcache")
     + js("/node_modules/moment/min/moment.min.js")
     + js("/js/buzzProgressModule.min.js")
     + js("/js/buzzHeaderModule.min.js")
+    + js("/js/buzzFooterModule.min.js")
     + js("/node_modules/angular-file-reader-module/dist/angular-file-reader.js")
     script.
         Array.from(document.getElementsByClassName("init")).forEach(function (ele) {
             ele.className = ele.className.replace(/(^|\s)init($|\s)/, ' ')
         });
+    script.
+        angular.bootstrap(document.getElementById('buzz-footer'), ['buzzFooterModule']);

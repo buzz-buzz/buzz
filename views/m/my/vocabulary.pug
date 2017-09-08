@@ -8,12 +8,23 @@ html(manifest="/buzz2.appcache")
     title='Buzzbuzz English'
     + css("/public/css/style.min.css", true)
     + css("/public/css/semantic-ui/semantic.min.css")
+    + css("/public/css/my/layout.min.css")
+      <!-- Only required for desktop -->
+    + css("/node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-hover.min.css")
+
+    <!-- Always required -->
+    + css("/node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-base.min.css")
+
+    <!-- Only required for desktop -->
+    + css("/node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-desktop.min.css")
 body
     style.
         .init {
             display: none;
         }
-
+        html {
+            font-size: medium;
+        }
         body {
             margin: 0px;
         }
@@ -28,6 +39,8 @@ body
             display: block;
             position: relative;
             width: 100%;
+            margin:0;
+            padding:0;
         }
 
         .row.blank {
@@ -81,7 +94,7 @@ body
 
         .row.date {
             background-color: #e8e8e8;
-            position: relative;
+            position: relative !important;
             height: 1.8rem;
         }
 
@@ -137,18 +150,20 @@ body
         .row.blank
         .row.blank
         .row.blank
-    include ../tail.pug
-    + tailcontent(false, false, true, false)
+    include partials/footer.pug
     include ../../js
-    script(src=`${config.cdn}/node_modules/chart.js/dist/Chart.js?${config.version}`)
-    script(src=`${config.cdn}/node_modules/angular-chart.js/dist/angular-chart.min.js?${config.version}`)
-    script(src=`${config.cdn}/js/quizModule.min.js?${config.version}`)
-    script(src=`${config.cdn}/js/DateModule.min.js?${config.version}`)
-    script(src=`${config.cdn}/node_modules/moment/min/moment.min.js?${config.version}`)
-    script(src=`${config.cdn}/js/buzzProgressModule.min.js?${config.version}`)
-    script(src=`${config.cdn}/js/buzzHeaderModule.min.js?${config.version}`)
-    + js("/js/vocabularyModule.min.js")
+    +js ("/node_modules/chart.js/dist/Chart.js")
+    +js ("/node_modules/angular-chart.js/dist/angular-chart.min.js")
+    +js ("/js/quizModule.min.js")
+    +js ("/js/DateModule.min.js")
+    +js ("/node_modules/moment/min/moment.min.js")
+    +js ("/js/buzzProgressModule.min.js")
+    +js ("/js/buzzHeaderModule.min.js")
+    +js ("/js/vocabularyModule.min.js")
+    +js ("/js/buzzFooterModule.min.js")
     script.
         Array.from(document.getElementsByClassName("init")).forEach(function (ele) {
             ele.className = ele.className.replace(/(^|\s)init($|\s)/, ' ')
         });
+    script.
+            angular.bootstrap(document.getElementById('buzz-footer'), ['buzzFooterModule']);

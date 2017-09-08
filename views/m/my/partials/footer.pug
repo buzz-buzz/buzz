@@ -1,22 +1,22 @@
-nav#buzz-footer.navbar.navbar-app.navbar-absolute-bottom(style="background-color: #333;")
-    .btn-group.justified(style="padding: 0.6rem;")
-        a.btn.btn-navbar(href="/my/today", style="color: white; line-height: initial;")
+nav#buzz-footer.navbar.navbar-app.navbar-absolute-bottom(style="background-color: #333;", ng-controller="footerCtrl")
+    .btn-group.justified(style="padding: 0.6rem !important;")
+        a.btn.btn-navbar(href="/my/today", style="color: white; line-height: initial;", ng-class="{'active':isActive('/my/play')}")
             i.icon-play2(style="font-size: 200%;")
             br
             | 学习
-        a.btn.btn-navbar(href="/my/progress", style="color: white; line-height: initial;")
+        a.btn.btn-navbar(href="/my/progress", style="color: white; line-height: initial;", ng-class="{'active': isActive('/my/progress')}")
             i.icon-stats-bars(style="font-size: 200%;")
             br
             | 成绩
-        a.btn.btn-navbar.active(href='/video', style="line-height: initial; text-align: center;")
+        a.btn.btn-navbar(href='/video', style="color: white; line-height: initial; text-align: center;")
             i.huge.icons(style="font-size: 200%;")
                 i.big.thin.circle.icon
                 i.record.icon
-        a.btn.btn-navbar(href="/my/vocabulary", style="color: white; line-height: initial;")
+        a.btn.btn-navbar(href="/my/vocabulary", style="color: white; line-height: initial;", ng-class="{'active':isActive('/my/vocabulary')}")
             i.icon-book(style="font-size: 200%;")
             br
             | 生词
-        a.btn.btn-navbar(href="/my/account", style="color: white; line-height: initial;")
+        a.btn.btn-navbar(href="/my/account", style="color: white; line-height: initial;", ng-class="{'active':isActive('/my/account')}")
             i.icon-user(style="font-size: 200%;")
             br
             | 我的
