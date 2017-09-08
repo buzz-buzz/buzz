@@ -7,7 +7,6 @@ html(manifest="/buzz2.appcache")
     meta(name="viewport", content="width=375, user-scalable=no")
     title='Buzzbuzz English'
     + css("/public/css/style.min.css", true)
-    + css("/public/css/semantic-ui/semantic.min.css")
     + css("/public/css/my/layout.min.css")
       <!-- Only required for desktop -->
     + css("/node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-hover.min.css")
@@ -16,7 +15,8 @@ html(manifest="/buzz2.appcache")
     + css("/node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-base.min.css")
 
     <!-- Only required for desktop -->
-    + css("/node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-desktop.min.css")
+    + css("/node_modules/mobile-angular-ui/dist/css/mobile-angular-ui-desktop.min.css") 
+    + css("/public/css/semantic-ui/semantic.min.css")
 body
     style.
         .init {
