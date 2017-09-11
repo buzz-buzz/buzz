@@ -293,7 +293,7 @@ angular.module('spaModule')
                         $scope.loading = false;
                         alert(reason);
                     });
-            })
+            });
         };
         $rootScope.closeDimmer = function () {
             document.getElementById('video-uploaded').style.opacity = '1';
