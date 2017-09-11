@@ -99,33 +99,33 @@ angular.module('wechatShareModule', ['clientConfigModule', 'buzzHeaderModule'])
                 var dfd = $q.defer();
 
                 if (navigator.userAgent.indexOf('wechat') < 0) {
-                    dfd.reject();
+                    dfd.reject('请在微信浏览中打开并分享');
                     return dfd.promise;
                 }
 
                 if (typeof wx === 'undefined') {
-                    dfd.reject();
+                    dfd.reject('未找到 wx 对象');
                     return dfd.promise;
                 }
 
                 if (wx.errorHappened) {
-                    dfd.reject();
+                    dfd.reject('上次注册微信接口时发生了错误');
                     return dfd.promise;
                 }
 
                 wx.error(function () {
                     wx.errorHappened = true;
-                    dfd.reject();
+                    dfd.reject('微信接口发生了错误');
                 });
 
                 wx.ready(function () {
                     if (wx.errorHappened) {
-                        dfd.reject();
+                        dfd.reject('微信接口已准备好，但是微信接口发生了错误');
                     } else {
                         dfd.resolve();
                     }
                 });
-                
+
                 return dfd.promise;
             }
         };

@@ -288,12 +288,10 @@ angular.module('spaModule')
                     .then(function () {
                         $scope.loading = false;
                         document.getElementById('video-uploaded').style.opacity = '0';
-                        $('#dimmer-video').dimmer({
-                            closable: false
-                        }).dimmer('show');
-                    }).catch(function () {
+                        $('#dimmer-video').dimmer('show');
+                    }).catch(function (reason) {
                         $scope.loading = false;
-                        alert('微信接口调用失败，请刷新页面重试。');
+                        alert(reason);
                     });
             })
         };
