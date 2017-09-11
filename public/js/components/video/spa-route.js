@@ -18,7 +18,7 @@ angular.module('spaModule')
                 controller: 'videoPlayerCtrl',
                 controllerAs: 'videoPlayerCtrl'
             })
-            .when('/video-share/:video_id', {
+            .when('/video-share/:video_id/member_id?', {
                 templateUrl: 'video-share.html',
                 controller: 'videoShareFriendCtrl',
                 controllerAs: 'videoShareFriendCtrl'
@@ -113,51 +113,6 @@ angular.module('spaModule')
 
         $scope.videoChange = function () {
             $scope.uploadVideoToOwnServer();
-        };
-
-        //PC端在使用
-        $scope.uploadVideo = function () {
-            var file = document.querySelector('input[id=video-file]');
-
-            if (file) {
-                file = file.files[0];
-            }
-
-            if (!file && recordedBlobs && recordedBlobs.length) {
-                file = new Blob(recordedBlobs, {
-                    type: 'video/webm'
-                });
-            }
-
-            if (file) {
-                $scope.uploading = true;
-                $http.put('/videos', {
-                    file: file,
-                    'x:category': 'upload-' + Math.random().toString()
-                }, {
-                    headers: {
-                        'X-Requested-With': undefined,
-                        'Content-Type': undefined
-                    },
-                    transformRequest: requestTransformers.transformToFormData
-                }).then(function (res) {
-                    if (res.data.isSuccess === false) {
-                        throw res;
-                    } else {
-                        var backUrl = encodeURIComponent('//' + res.data.host + '/' + res.data.key);
-                        //bta(res.data) 返回的url，保存在数据库中
-                        //saveUrl(btoa(backUrl));
-                        $location.path('/video-player/' + backUrl);
-                    }
-                }).then(null, function (reason) {
-                    console.error(reason);
-                    $scope.errorMessage = reason.data || '出了错误。';
-                }).finally(function () {
-                    $scope.uploading = false;
-                });
-            } else {
-                $scope.errorMessage = 'Please record a video first!';
-            }
         };
 
         $scope.$watch('errorMessage', function (newValue, oldValue) {
