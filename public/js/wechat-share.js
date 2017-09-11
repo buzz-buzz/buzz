@@ -90,6 +90,13 @@ angular.module('wechatShareModule', ['clientConfigModule', 'buzzHeaderModule'])
                     success: shareToFriendSuccess,
                     cancel: shareToFriendCancel
                 }));
+            }).catch(function (reason) {
+                var debug = location.href.indexOf('debug=true') >= 0;
+                if (debug) {
+                    alert(reason);
+                } else {
+                    console.error(reason);
+                }
             });
         });
     }])
@@ -98,10 +105,10 @@ angular.module('wechatShareModule', ['clientConfigModule', 'buzzHeaderModule'])
             ready: function () {
                 var dfd = $q.defer();
 
-                if (navigator.userAgent.indexOf('wechat') < 0) {
-                    dfd.reject('请在微信浏览中打开并分享');
-                    return dfd.promise;
-                }
+                // if (navigator.userAgent.indexOf('wechat') < 0) {
+                //     dfd.reject('请在微信浏览中打开并分享');
+                //     return dfd.promise;
+                // }
 
                 if (typeof wx === 'undefined') {
                     dfd.reject('未找到 wx 对象');
