@@ -360,7 +360,7 @@ angular.module('spaModule')
         $rootScope.$on('//profile:got', handleProfile);
 
     }])
-    .controller('videoShareFriendCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location) {
+    .controller('videoShareFriendCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', 'weixin', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, weixin) {
         $scope.hideVideo = false;
 
         function showProcessing() {
@@ -401,10 +401,18 @@ angular.module('spaModule')
 
 
         $scope.shareToFriends = function () {
-            document.getElementById('video-uploaded').style.opacity = 0;
-            $('#dimmer-video').dimmer({
-                closable: false
-            }).dimmer('show');
+            $scope.loading = true;
+            angular.element(document).ready(function () {
+                weixin.ready()
+                    .then(function () {
+                        $scope.loading = false;
+                        document.getElementById('video-uploaded').style.opacity = '0';
+                        $('#dimmer-video').dimmer('show');
+                    }).catch(function (reason) {
+                        $scope.loading = false;
+                        alert(reason);
+                    });
+            });
         };
         $rootScope.closeDimmer = function () {
             document.getElementById('video-uploaded').style.opacity = '1';
