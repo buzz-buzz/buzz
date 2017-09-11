@@ -18,7 +18,7 @@ angular.module('spaModule')
                 controller: 'videoPlayerCtrl',
                 controllerAs: 'videoPlayerCtrl'
             })
-            .when('/video-share/:video_id/member_id?', {
+            .when('/video-share/:video_id/:member_id?', {
                 templateUrl: 'video-share.html',
                 controller: 'videoShareFriendCtrl',
                 controllerAs: 'videoShareFriendCtrl'
