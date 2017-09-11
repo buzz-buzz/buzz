@@ -326,7 +326,7 @@ angular.module('spaModule')
             console.log('==Default==');
         };
 
-        $scope.shareToFriends = function () {
+        $rootScope.shareToFriends = function () {
             $scope.loading = true;
             angular.element(document).ready(function () {
                 weixin.ready()
@@ -337,12 +337,12 @@ angular.module('spaModule')
                             closable: false
                         }).dimmer('show');
                     }).catch(function () {
-                    $scope.loading = false;
-                    alert('微信接口调用失败，请刷新页面重试。');
-                });
+                        $scope.loading = false;
+                        alert('微信接口调用失败，请刷新页面重试。');
+                    });
             })
         };
-        $scope.closeDimmer = function () {
+        $rootScope.closeDimmer = function () {
             document.getElementById('video-uploaded').style.opacity = '1';
             $('#dimmer-video')
                 .dimmer('hide');
@@ -425,7 +425,7 @@ angular.module('spaModule')
             .then(function (videoInfo) {
                 if (videoInfo.data && videoInfo.data.video_path) {
                     return videoInfo.data.video_path;
-                }else{
+                } else {
                     return '';
                 }
             })
@@ -453,7 +453,11 @@ angular.module('spaModule')
                 closable: false
             }).dimmer('show');
         };
-
+        $rootScope.closeDimmer = function () {
+            document.getElementById('video-uploaded').style.opacity = '1';
+            $('#dimmer-video')
+                .dimmer('hide');
+        };
         $scope.playVideo = function () {
             //$location.path('/video');
             location.href = '/video';
