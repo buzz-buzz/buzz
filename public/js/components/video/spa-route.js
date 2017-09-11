@@ -18,7 +18,7 @@ angular.module('spaModule')
                 controller: 'videoPlayerCtrl',
                 controllerAs: 'videoPlayerCtrl'
             })
-            .when('/video-share/:video_id/:member_id', {
+            .when('/video-share/:video_id', {
                 templateUrl: 'video-share.html',
                 controller: 'videoShareFriendCtrl',
                 controllerAs: 'videoShareFriendCtrl'
@@ -93,9 +93,9 @@ angular.module('spaModule')
                     }).then(function (res) {
                         //回传video_path_id 作为参数，传递过去
                         //$location.path('/video-preview/' + backUrl + '/' + res.data.video_id);
-                        if(res.data && res.data.video_id){
+                        if (res.data && res.data.video_id) {
                             $location.path('/video-preview/' + res.data.video_id);
-                        }else{
+                        } else {
                             $scope.errorMessage = 'buzz-server api error.';
                             $scope.uploadAgainTag = true;
                         }
@@ -199,14 +199,16 @@ angular.module('spaModule')
     .controller('videoPreviewCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', 'videoStatus', 'api', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout, videoStatus, api) {
         api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
             .then(function (videoInfo) {
-                $scope.videoStatus = {
-                    description: '',
-                    raw: decodeURIComponent(atob(videoInfo.data.video_path))
-                };
+                if (videoInfo.data && videoInfo.data.video_path) {
+                    $scope.videoStatus = {
+                        description: '',
+                        raw: decodeURIComponent(atob(videoInfo.data.video_path))
+                    };
 
-                angular.element(document).ready(function () {
-                    $scope.$broadcast('//video-info:got', $scope.videoStatus);
-                });
+                    angular.element(document).ready(function () {
+                        $scope.$broadcast('//video-info:got', $scope.videoStatus);
+                    });
+                }
             });
 
         $scope.$watch('errorMessage', function (newValue, oldValue) {
@@ -272,7 +274,7 @@ angular.module('spaModule')
             //get src
             api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
                 .then(function (videoInfo) {
-                    if (videoInfo.data.video_path) {
+                    if (videoInfo.data && videoInfo.data.video_path) {
                         videoStatus.get(atob(videoInfo.data.video_path)).then(function (status) {
                             hideProcessing();
                             hideError();
@@ -335,9 +337,9 @@ angular.module('spaModule')
                             closable: false
                         }).dimmer('show');
                     }).catch(function () {
-                        $scope.loading = false;
-                        alert('微信接口调用失败，请刷新页面重试。');
-                    });
+                    $scope.loading = false;
+                    alert('微信接口调用失败，请刷新页面重试。');
+                });
             })
         };
         $scope.closeDimmer = function () {
@@ -367,27 +369,11 @@ angular.module('spaModule')
         });
     }])
     .controller('videoShareCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', '$q', 'weixin', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, $q, weixin) {
-        var linkUrl = location.href;
-        if (linkUrl.indexOf('video-player') > -1) {
-            //获取当前member_id
-            var strCookie = document.cookie;
-            var arrCookie = strCookie.split(";");
-            var member_id = '00000000-0000-0000-0000-000000000000';
-            for (var i = 0; i < arrCookie.length; i++) {
-                var arr = arrCookie[i].split("=");
-                if ("mid" == arr[0]) {
-                    member_id = arr[1];
-                    break;
-                }
-            }
-            linkUrl = linkUrl.replace('video-player', 'video-share') + '/' + member_id
-        }
-
         //share to friends
         var sharable = {
             title: '邀请你看TA的自拍秀',
             desc: '我在Buzzbuzz自拍了英语视频，快来看看吧',
-            link: linkUrl,
+            link: location.href.replace('video-player', 'video-share'),
             imgUrl: 'https://resource.buzzbuzzenglish.com/new_buzz_logo1.png'
         };
 
@@ -435,9 +421,13 @@ angular.module('spaModule')
         }
 
         //video_id
-        api.get('/service-proxy/buzz/video/info/:video_id/:member_id'.replace(':video_id', $routeParams.video_id).replace(':member_id', $routeParams.member_id))
+        api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
             .then(function (videoInfo) {
-                return videoInfo.data.video_path;
+                if (videoInfo.data && videoInfo.data.video_path) {
+                    return videoInfo.data.video_path;
+                }else{
+                    return '';
+                }
             })
             .then(function (src) {
                 if (!src) {

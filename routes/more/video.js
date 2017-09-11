@@ -74,7 +74,7 @@ module.exports = function (app, router, render, server) {
         .get('/video', saas.checkSaasReferer, membership.ensureAuthenticated, renderVideoSPA)
         .get('/video-player/:video_id', saas.checkSaasReferer, renderVideoSPA)
         .get('/video-preview/:video_id', saas.checkSaasReferer, renderVideoSPA)
-        .get('/video-share/:video_id/:member_id', saas.checkSaasReferer, renderVideoSPA)
+        .get('/video-share/:video_id', saas.checkSaasReferer, renderVideoSPA)
         .get('/video-list', saas.checkSaasReferer, renderVideoSPA)
         .put('/videos', function* (next) {
             try {

@@ -67,17 +67,10 @@ module.exports = function (app, router, parse) {
                 method: 'POST'
             }, proxyOption));
         })
-        .get('/service-proxy/buzz/video/info/:video_id/:member_id?', membership.setHcdUserIfSignedIn, function* () {
+        .get('/service-proxy/buzz/video/info/:video_id', membership.setHcdUserIfSignedIn, function* () {
             let video_id = this.params.video_id;
-            let member_id = '00000000-0000-0000-0000-000000000000';
-            if (this.params.member_id) {
-                member_id = this.params.member_id;
-            } else if (this.state.hcd_user && this.state.hcd_user.member_id) {
-                member_id = this.state.hcd_user.member_id;
-            }
 
-            let path = Router.url('/video/path/info/:member_id/:video_id', {
-                member_id: member_id,
+            let path = Router.url('/video/path/info/:video_id', {
                 video_id: video_id
             });
 
