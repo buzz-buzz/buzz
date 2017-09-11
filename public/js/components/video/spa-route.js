@@ -492,5 +492,4 @@ angular.module('spaModule')
             })
             return dfd.promise;
         }
-
     }]);
