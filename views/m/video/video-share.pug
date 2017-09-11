@@ -1,6 +1,6 @@
 script(type="text/ng-template", id="video-share.html")
     .ui.container(ng-hide="hideVideo")
-        p(style='font-size: 20px; margin: 1rem 0; font-family:"HYxindipaofu"') 您的好友给你分享了TA的作品 :
-        include video-angular
+        p#video-share(style='font-size: 20px; margin: 1rem 0; font-family:"HYxindipaofu"') 您的好友给你分享了TA的作品 :
+    include video-angular
     include ./wechat-share
 include ./video-dimmers

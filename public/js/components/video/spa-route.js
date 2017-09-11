@@ -417,6 +417,11 @@ angular.module('spaModule')
             //$location.path('/video');
             location.href = '/video';
         };
+        $scope.$on('//video-player:got', function (event, videoPlayer) {
+            videoPlayer.onPlay(function () {
+                $('#video-share').css("display", "none");
+            })
+        })
     }])
     .controller('jwPlayerCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', '$q', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout, $q) {
         function onLoadedMetaData() {
