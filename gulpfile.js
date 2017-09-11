@@ -102,7 +102,7 @@ gulp.task('uglify-css', function (done) {
 
 gulp.task('default', [])
 
-gulp.task('release', ['bump', 'uglify-js', 'uglify-css'])
+gulp.task('release', ['bump', 'uglify-js', 'uglify-css', 'build-app-cache'])
 
 gulp.task('test', function (done) {
     new karmaServer({
