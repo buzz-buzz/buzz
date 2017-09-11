@@ -164,13 +164,13 @@ html(manifest="/buzz2.appcache")
         .row.title {
             height: 2.8rem;
             line-height: 2.8rem;
-            padding-left: 1rem;
+            padding-left: 1rem !important;
         }
 
         .row.content {
             background-color: white;
             line-height: 2.8rem;
-            padding-left: 1rem;
+            padding-left: 1rem !important;
         }
 
         .row.content input {
@@ -183,6 +183,7 @@ html(manifest="/buzz2.appcache")
             height: 19px;
             border: 1px solid #f0f0f0;
             outline: #f9b600;
+            font-size: small;
         }
 
         input:focus {
@@ -214,7 +215,11 @@ html(manifest="/buzz2.appcache")
             width: 45%;
             text-align: center;
         }
-
+        .radio input {
+            position: absolute;
+            left: 30%;
+            top: 20%
+        }
         select {
             border: none;
             background-color: white;

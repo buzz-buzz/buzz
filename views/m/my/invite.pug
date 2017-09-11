@@ -24,5 +24,6 @@ style.
             p &nbsp;
             P 是否有邀请渠道？有请在下方填入。
             input(type="text", placeholder="没有请忽略", ng-model="channelData.data")
+            div &nbsp;
             button.ui.yellow.button(style="margin: 10px auto;", ng-click="crateLink()") 生成邀请链接
             a(style="word-wrap: break-word;", ng-href="{{myShareLink}}", target="_blank") {{myShareLink}}

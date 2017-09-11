@@ -16,6 +16,10 @@ style.
         right: -4%;
         top:14px;
     }
+    label {
+        display: block;
+        font-weight: normal;
+    }
 
 mixin mobileForm()
     form.sign-up-form.text-label(name="signUpForm", ng-submit="signUp()", ng-if="step == 1", ng-controller="signUpCtrl")
