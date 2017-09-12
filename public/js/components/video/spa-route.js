@@ -86,20 +86,12 @@ angular.module('spaModule')
                     },
                     transformRequest: requestTransformers.transformToFormData
                 }).then(function (res) {
-                    var backUrl = encodeURIComponent(res.data);
-                    //bta(res.data) 返回的url，保存在数据库中
-                    api.post('/service-proxy/buzz/video/save/path/' + btoa(backUrl), {
-                        dialogue: $scope.formData.subtitle
-                    }).then(function (res) {
-                        //回传video_path_id 作为参数，传递过去
-                        //$location.path('/video-preview/' + backUrl + '/' + res.data.video_id);
-                        if (res.data && res.data.video_id) {
-                            $location.path('/video-preview/' + res.data.video_id);
-                        } else {
-                            $scope.errorMessage = 'buzz-server api error.';
-                            $scope.uploadAgainTag = true;
-                        }
-                    });
+                    if(res.data && res.data.video_id){
+                        $location.path('/video-preview/' + res.data.video_id);
+                    }else{
+                        $scope.errorMessage = 'buzz-server api error.';
+                        $scope.uploadAgainTag = true;
+                    }
                 }).catch(function (reason) {
                     $scope.errorMessage = reason.statusText || reason;
                     $scope.uploadAgainTag = true;

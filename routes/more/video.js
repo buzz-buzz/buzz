@@ -14,6 +14,13 @@ const stream = require('koa-stream');
 const greenSharedLogger = require('../../common/logger')('/routes/more/video.js');
 const videoBll = require('../../bll/video');
 const membership = require('../../membership');
+const proxy = require('../../service-proxy/proxy');
+
+const proxyOption = {
+    host: config.buzz.inner.host,
+    port: config.buzz.inner.port,
+};
+
 
 function yieldableExec(command) {
     return function (cb) {
@@ -94,7 +101,7 @@ module.exports = function (app, router, render, server) {
 
         //     this.body = stream.path;
         // })
-        .post('/videos', function* (next) {
+        .post('/videos', membership.setHcdUserIfSignedIn, function* (next) {
             let parts = parse(this);
             let part;
 
@@ -102,6 +109,7 @@ module.exports = function (app, router, render, server) {
             let videoStoredPath = '';
             let srtStoredPath = '';
             let vttStoredPath = '';
+            let dialogue = 'no dialogue';
             while ((part = yield parts)) {
                 if (part && part.filename) {
                     ugcPaths = videoBll.ugcPaths(part.filename);
@@ -113,6 +121,7 @@ module.exports = function (app, router, render, server) {
                     console.log('uploading %s --> %s', part.filename, stream.path);
                 } else {
                     console.log('generating vtt: %s.', vttStoredPath);
+                    dialogue = part[1];
                     videoBll.generateVtt(vttStoredPath, part[1]);
                 }
             }
@@ -122,7 +131,24 @@ module.exports = function (app, router, render, server) {
             }
 
             let encodedPath = new Buffer(videoStoredPath).toString('base64');
-            this.body = `/videos/${encodedPath}`;
+            //this.body = `/videos/${encodedPath}`;
+
+            let member_id = '00000000-0000-0000-0000-000000000000';
+            if (this.state.hcd_user && this.state.hcd_user.member_id) {
+                member_id = this.state.hcd_user.member_id;
+            }
+
+            let video_data = yield proxy(Object.assign({
+                path: '/video/path/:member_id/:path'.replace(':member_id', member_id)
+                    .replace(':path', Buffer(`/videos/${encodedPath}`).toString('base64')),
+                method: 'POST',
+                data: {
+                    dialogue: dialogue
+                }
+            }, proxyOption));
+
+            this.body = video_data;
+
         })
         .get('/videos/:path', function* (next) {
             let fpath = new Buffer(this.params.path.replace('.mp4', '').replace('.vtt', ''), 'base64').toString();
