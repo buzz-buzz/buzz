@@ -12,6 +12,8 @@ let getPackageJson = function () {
     return JSON.parse(fs.readFileSync('./package.json', 'utf8'))
 }
 
+let sh = require('shelljs');
+
 function buildCachable(dir, a) {
     fs.readdirSync(dir).map(p => {
         let path = `${dir}/${p}`
@@ -105,7 +107,8 @@ gulp.task('default', [])
 gulp.task('pre-release', ['bump', 'uglify-js', 'uglify-css'])
 
 gulp.task('release', function (done) {
-    runSequence('pre-release', 'build-app-cache');
+    sh.exec('gulp pre-release && gulp build-app-cache && gulp bump-app-cache');
+    done;
 })
 
 gulp.task('test', function (done) {
@@ -113,4 +116,4 @@ gulp.task('test', function (done) {
         configFile: __dirname + '/karma.conf.js',
         singleRun: true
     }, done).start()
-})
+});

@@ -1,10 +1,11 @@
 CACHE MANIFEST
 
-#version: 7.1.0
+#version: 7.7.1-1505204414720
 
 CACHE:
 #Generated:
 /js/accountModule.min.js
+/js/buzzFooterModule.min.js
 /js/buzzHeaderModule.min.js
 /js/buzzHistoryModule.min.js
 /js/buzzModule/encouraging-sharing.min.js
@@ -15,6 +16,8 @@ CACHE:
 /js/buzzModule.min.js
 /js/buzzPlayerModule.min.js
 /js/buzzProgressModule.min.js
+/js/components/router-helper.min.js
+/js/components/spa-module.min.js
 /js/components/spaModule.min.js
 /js/components/spaModuleWithFile.min.js
 /js/components/spaModuleWithHeader.min.js
@@ -61,6 +64,7 @@ CACHE:
 /css/vocabulary-printable.min.css
 /css/vocabulary.min.css
 #Other:
+
 /node_modules/socket.io-client/dist/socket.io.slim.js
 /node_modules/angular-file-reader-module/dist/angular-file-reader.js
 /lib/jwplayer/jwplayer.js
