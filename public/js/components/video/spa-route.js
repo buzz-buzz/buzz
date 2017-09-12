@@ -184,6 +184,7 @@ angular.module('spaModule')
     }])
     .controller('videoPlayerCtrl', ['$scope', '$routeParams', '$rootScope', '$http', 'clientConfig', '$timeout', 'api', 'videoStatus', '$location', '$sce', '$q', 'weixin', function ($scope, $routeParams, $rootScope, $http, clientConfig, $timeout, api, videoStatus, $location, $sce, $q, weixin) {
         $scope.hideVideo = false;
+        $scope.videoTitle = true;
 
         function showProcessing() {
             $('#dimmer-processing').dimmer('show');
@@ -307,10 +308,12 @@ angular.module('spaModule')
         getVideoStatus();
         $scope.$on('//video-player:got', function (event, videoPlayer) {
             videoPlayer.onPlay(function () {
-                $('#video-title').css("display", "none");
-                $('#cue').css("display", "none");
+                $scope.videoTitle = false;
+                $scope.$apply();
             })
+
         })
+
 
         $scope.refreshStatus = getVideoStatus;
         $scope.$watch('hideVideo', function (newVal, oldVal) {
@@ -425,7 +428,8 @@ angular.module('spaModule')
         };
         $scope.$on('//video-player:got', function (event, videoPlayer) {
             videoPlayer.onPlay(function () {
-                $('#video-share').css("display", "none");
+                $scope.videoShare = true;
+                $scope.$apply();
             })
         })
     }])
