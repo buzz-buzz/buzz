@@ -16,14 +16,21 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             'node_modules/jasmine-promises/dist/jasmine-promises.js',
-            'node_modules/requirejs/require.js',
+            // 'node_modules/requirejs/require.js',
             'node_modules/angular/angular.js',
+
+            "node_modules/angular-route/angular-route.min.js",
+            "node_modules/mobile-angular-ui/dist/js/mobile-angular-ui.min.js",
+            "public/lib/jwplayer/jwplayer.js",
+            
             "node_modules/angular-query-parser-module/dist/scripts/all.min.js",
             "node_modules/angular-service/dist/scripts/all.min.js",
+            "node_modules/angular-file-reader-module/angular-file-reader.js",
             'node_modules/angular-mocks/angular-mocks.js',
             'public/js/**.js',
             'public/js/components/spa-module.js',
             'public/js/components/router-helper.js',
+            'public/js/components/video/spa-route.js',
             'test/client/clientConfig.js',
             'test/client/**/*Test.js'
         ],
@@ -61,7 +68,7 @@ module.exports = function (config) {
 
 
         // enable / disable watching file and executing tests whenever any file changes
-        autoWatch: false,
+        autoWatch: true,
 
 
         // start these browsers
@@ -76,7 +83,7 @@ module.exports = function (config) {
         // Concurrency level
         // how many browser should be started simultaneous
         concurrency: Infinity,
-        plugins: ['karma-jasmine', 'karma-phantomjs-launcher', 'karma-mocha'],
+        plugins: ['karma-jasmine', 'karma-phantomjs-launcher', 'karma-chrome-launcher', 'karma-mocha'],
         browserify: {
             debug: true,
             transform: ['brfs']

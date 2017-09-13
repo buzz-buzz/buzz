@@ -1,34 +1,4 @@
 angular.module('spaModule')
-    .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
-        $locationProvider.html5Mode(true);
-
-        $routeProvider
-            .when('/video', {
-                templateUrl: 'video.html',
-                controller: 'videoCtrl',
-                controllerAs: 'videoCtrl'
-            })
-            .when('/video-preview/:video_id', {
-                templateUrl: 'video-preview.html',
-                controller: 'videoPreviewCtrl',
-                controllerAs: 'videoPreviewCtrl'
-            })
-            .when('/video-player/:video_id', {
-                templateUrl: 'video-player.html',
-                controller: 'videoPlayerCtrl',
-                controllerAs: 'videoPlayerCtrl'
-            })
-            .when('/video-share/:video_id/:member_id?', {
-                templateUrl: 'video-share.html',
-                controller: 'videoShareFriendCtrl',
-                controllerAs: 'videoShareFriendCtrl'
-            });
-
-        $routeProvider.otherwise('/video');
-    }])
-    .run([function () {
-        jwplayer.key = 'lG24bAGJCRLF1gi4kajg4EnUKi+ujyUyKMoSNA==';
-    }])
     .run(['$rootScope', '$location', 'routerHelper', function ($rootScope, $location, routerHelper) {
         $rootScope.$on('$routeChangeSuccess', function (ev, current, previous) {
             $rootScope.back = function ($event) {
@@ -50,6 +20,7 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
+                        status.status = 'done';
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -86,9 +57,9 @@ angular.module('spaModule')
                     },
                     transformRequest: requestTransformers.transformToFormData
                 }).then(function (res) {
-                    if(res.data && res.data.video_id){
+                    if (res.data && res.data.video_id) {
                         $location.path('/video-preview/' + res.data.video_id);
-                    }else{
+                    } else {
                         $scope.errorMessage = 'buzz-server api error.';
                         $scope.uploadAgainTag = true;
                     }
@@ -118,7 +89,7 @@ angular.module('spaModule')
         $scope.changeDialogue = function () {
             if ($scope.dialogueList) {
                 if ($scope.dialogueIndex < $scope.dialogueList.length - 1) {
-                    $scope.dialogueIndex++;
+                    $scope.dialogueIndex = Math.floor(Math.random() * $scope.dialogueList.length)
                 } else {
                     $scope.dialogueIndex = 0;
                 }
@@ -142,6 +113,27 @@ angular.module('spaModule')
             .finally(function () {
                 $scope.loading = false;
             });
+
+        $scope.previous = function () {
+            if ($scope.dialogueList) {
+                if ($scope.dialogueIndex > 0) {
+                    $scope.dialogueIndex--
+                } else {
+                    $scope.dialogueIndex = $scope.dialogueList.length - 1;
+                }
+                $scope.formData.subtitle = $scope.dialogueList[$scope.dialogueIndex];
+            }
+        };
+        $scope.next = function () {
+            if ($scope.dialogueList) {
+                if ($scope.dialogueIndex < $scope.dialogueList.length - 1) {
+                    $scope.dialogueIndex++;
+                } else {
+                    $scope.dialogueIndex = 0;
+                }
+                $scope.formData.subtitle = $scope.dialogueList[$scope.dialogueIndex];
+            }
+        }
     }])
     .controller('videoPreviewCtrl', ['$scope', '$routeParams', '$http', 'subTitleParser', '$rootScope', '$location', 'requestTransformers', '$timeout', 'videoStatus', 'api', function ($scope, $routeParams, $http, subTitleParser, $rootScope, $location, requestTransformers, $timeout, videoStatus, api) {
         api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))

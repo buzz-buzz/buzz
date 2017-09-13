@@ -8,9 +8,15 @@ script(type="text/ng-template", id="video.html")
                     .subtitle-label(style='font-family:"HYxindipaofu"; color: #888; margin-bottom: 1em;') 请记住以下内容:
                     .subtitle-english(style='padding-top: 1rem;') {{formData.subtitle || 'Today is monday.'}}
                     .subtitle-change(style='display: flex; justify-content: center; margin-top: 1rem;', ng-if='changeDialogueTag')
+                        .ui.mini.button(style='padding: .5em; font-size: 1.5rem; color: white; background-color: #f7b52a;', ng-click='previous()')
+                            i.step.backward.icon
+                            span 上一个
                         .ui.mini.button(style='padding: .5em; font-size: 1.5rem; color: white; background-color: #f7b52a;', ng-click='changeDialogue()')
                             i.random.icon
                             span 换一换
+                        .ui.mini.button(style='padding: .5em; font-size: 1.5rem; color: white; background-color: #f7b52a;', ng-click='next()')
+                            i.step.forward.icon
+                            span 下一个
                     .tips-bottom(style='position: absolute; right: 0; bottom: 1em; font-weight: 800; font-size: .8em;')
                         p PS: 请在录制时说出这句'台词' ,
                         span 时长不超过

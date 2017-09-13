@@ -12,6 +12,8 @@ block js
             if(location.protocol !== 'https:') {
                 location.href = location.href.replace('http:', 'https:');
             }
+    
+    + js("/lib/jwplayer/jwplayer.js")
     script.
         angular.module('spaModule', [
             'ngRoute',
@@ -20,11 +22,40 @@ block js
             'videoParserModule',
             'buzzHeaderModule',
             'wechatShareModule'
-        ]);
+        ])
+        .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+        $locationProvider.html5Mode(true);
+
+        $routeProvider
+            .when('/video', {
+                templateUrl: 'video.html',
+                controller: 'videoCtrl',
+                controllerAs: 'videoCtrl'
+            })
+            .when('/video-preview/:video_id', {
+                templateUrl: 'video-preview.html',
+                controller: 'videoPreviewCtrl',
+                controllerAs: 'videoPreviewCtrl'
+            })
+            .when('/video-player/:video_id', {
+                templateUrl: 'video-player.html',
+                controller: 'videoPlayerCtrl',
+                controllerAs: 'videoPlayerCtrl'
+            })
+            .when('/video-share/:video_id/:member_id?', {
+                templateUrl: 'video-share.html',
+                controller: 'videoShareFriendCtrl',
+                controllerAs: 'videoShareFriendCtrl'
+            });
+
+             $routeProvider.otherwise('/video');
+        }])
+        .run([function () {
+        jwplayer.key = 'lG24bAGJCRLF1gi4kajg4EnUKi+ujyUyKMoSNA==';
+        }])
     + js('/js/videoParserModule.min.js')
     + js('js/components/router-helper.js')
     + js('/js/components/video/spa-route.min.js')
     + js('/js/components/video/list.min.js')
     + js("/node_modules/angular-file-reader-module/dist/angular-file-reader.js")
     + js("/js/buzzHeaderModule.min.js")
-    + js("/lib/jwplayer/jwplayer.js")
