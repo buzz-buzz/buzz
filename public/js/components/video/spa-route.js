@@ -88,30 +88,32 @@ angular.module('spaModule')
             }
         });
 
-        $scope.changeDialogue = function () {
-            if ($scope.dialogueList) {
-                if ($scope.dialogueIndex < $scope.dialogueList.length - 1) {
-                    $scope.dialogueIndex = Math.floor(Math.random() * $scope.dialogueList.length)
-                } else {
-                    $scope.dialogueIndex = 0;
-                }
-                $scope.formData.subtitle = $scope.dialogueList[$scope.dialogueIndex];
+        $scope.changeDialogue = function (dialogueList) {
+            var len = dialogueList.length;
+            for (var i = 0; i < len; i++) {
+                var rand = parseInt(Math.random() * len);
+                var temp = dialogueList[rand];
+                dialogueList[rand] = dialogueList[i];
+                dialogueList[i] = temp;
             }
+            
         };
 
         $scope.loading = true;
         api.get('/service-proxy/buzz/video/subtitle-list')
-            .then(function (dialogueList) {
-                if (dialogueList.data.length > 0) {
-                    $scope.formData.subtitle = dialogueList.data[0];
+            .then(function (response) {
+                var dialogueList = response.data;
+                $scope.changeDialogue(dialogueList);
+
+                if (dialogueList.length > 0) {
+                    $scope.formData.subtitle = dialogueList[0];
                     $scope.dialogueIndex = 0;
-                    $scope.dialogueList = dialogueList.data;
+                    $scope.dialogueList = dialogueList;
                 }
 
-                if (dialogueList.data.length > 1) {
+                if (dialogueList.length > 1) {
                     $scope.changeDialogueTag = true;
                 }
-                $scope.changeDialogue();
             })
             .finally(function () {
                 $scope.loading = false;
