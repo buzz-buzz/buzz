@@ -41,7 +41,7 @@ angular.module('spaModule')
 
         $scope.uploadAgainTag = false;
         $scope.changeDialogueTag = false;
-
+        $scope.random = false;
         $scope.uploadVideoToOwnServer = function () {
             var file = document.querySelector('input[id=video-file]').files[0];
 
@@ -57,6 +57,7 @@ angular.module('spaModule')
                     },
                     transformRequest: requestTransformers.transformToFormData
                 }).then(function (res) {
+
                     if (res.data && res.data.video_id) {
                         $location.path('/video-preview/' + res.data.video_id);
                     } else {
@@ -76,6 +77,7 @@ angular.module('spaModule')
 
         $scope.videoChange = function () {
             $scope.uploadVideoToOwnServer();
+
         };
 
         $scope.$watch('errorMessage', function (newValue, oldValue) {
@@ -109,6 +111,7 @@ angular.module('spaModule')
                 if (dialogueList.data.length > 1) {
                     $scope.changeDialogueTag = true;
                 }
+                $scope.changeDialogue();
             })
             .finally(function () {
                 $scope.loading = false;

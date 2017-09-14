@@ -11,7 +11,7 @@ script(type="text/ng-template", id="video.html")
                         .ui.mini.button(style='padding: .5em; font-size: 1.5rem; color: white; background-color: #f7b52a;', ng-click='previous()')
                             i.step.backward.icon
                             span 上一个
-                        .ui.mini.button(style='padding: .5em; font-size: 1.5rem; color: white; background-color: #f7b52a;', ng-click='changeDialogue()')
+                        .ui.mini.button(style='padding: .5em; font-size: 1.5rem; color: white; background-color: #f7b52a;', ng-show="random", ng-click='changeDialogue()' )
                             i.random.icon
                             span 换一换
                         .ui.mini.button(style='padding: .5em; font-size: 1.5rem; color: white; background-color: #f7b52a;', ng-click='next()')
