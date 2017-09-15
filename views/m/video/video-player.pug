@@ -5,4 +5,7 @@ script(type="text/ng-template", id="video-player.html")
 
     include video-angular
     include ./wechat-share
-include ./video-dimmers
+    include ./video-dimmers
+.ui.dimmer#dimmer-video
+    .content(style='position: relative;', ng-click='closeDimmer()')
+        img(src='//resource.buzzbuzzenglish.com/video-share-friends.png', style='width: 100%;')
