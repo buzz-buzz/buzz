@@ -7,16 +7,18 @@ const proxy = require('./proxy');
 const cookie = require('../helpers/cookie');
 const url = require('url');
 const saas = require('../bll/saas');
+const urlWrapper = require('../common/url-wrapper');
 
 function redirectToReturnUrl(result, returnUrl) {
+    returnUrl = urlWrapper.wrapVersionAndTimestamp(returnUrl || '/');
     if (this.request.get('X-Request-With') === 'XMLHttpRequest') {
         result.isSuccess = false;
         result.code = 302;
-        result.message = returnUrl || '/';
+        result.message = returnUrl;
 
         this.body = result;
     } else {
-        this.redirect(saas.generateUrl(this, returnUrl || '/'));
+        this.redirect(saas.generateUrl(this, returnUrl));
     }
 }
 
@@ -25,7 +27,7 @@ let proxyOption = {
     port: config.sso.inner.port
 };
 
-function* validateSms(next) {
+function * validateSms(next) {
     const referer = url.parse(this.headers.referer);
 
     if ((referer.pathname === '/sign-up' || referer.pathname === '/reset-password') && referer.query && referer.query.indexOf('skipvalidation=true') >= 0) {
@@ -52,7 +54,7 @@ function* validateSms(next) {
     yield next;
 }
 
-function* bindWechatAccount(token, member_id) {
+function * bindWechatAccount(token, member_id) {
     if (token) {
         let bindResult = yield proxy({
             host: config.sso.inner.host,
@@ -70,7 +72,7 @@ function* bindWechatAccount(token, member_id) {
 }
 
 module.exports = function (app, router, parse) {
-    function* updateProfile(next) {
+    function * updateProfile(next) {
         let data = this.upstreamData;
 
         if (!data) {
@@ -90,22 +92,26 @@ module.exports = function (app, router, parse) {
         });
     }
 
-    function* parseData(next) {
+    function * parseData(next) {
         this.upstreamData = yield parse(this.request);
 
         if (!this.upstreamData.trk_tag && this.cookies.get('trk_tag')) {
-            this.upstreamData.trk_tag = this.cookies.get('trk_tag');
+            this.upstreamData.trk_tag = this
+                .cookies
+                .get('trk_tag');
         }
 
         if (!this.upstreamData.channel && this.cookies.get('channel')) {
-            this.upstreamData.channel = this.cookies.get('channel');
+            this.upstreamData.channel = this
+                .cookies
+                .get('channel');
         }
 
         yield next;
     }
 
     router
-        .post(serviceUrls.sso.signIn.frontEnd, function* (next) {
+        .post(serviceUrls.sso.signIn.frontEnd, function * (next) {
             let data = yield parse(this.request);
 
             let result = {};
@@ -130,13 +136,15 @@ module.exports = function (app, router, parse) {
             if (result.isSuccess) {
                 membership.setHcdUser(this, result.result);
                 yield bindWechatAccount(data.token, result.result.member_id);
-                cookie.resetSignOnCookies.call(this, result.result);
+                cookie
+                    .resetSignOnCookies
+                    .call(this, result.result);
                 redirectToReturnUrl.call(this, result, decodeURIComponent(data.return_url));
             }
 
             this.body = result;
         })
-        .get(serviceUrls.sso.profile.load.frontEnd, membership.ensureAuthenticated, function* (next) {
+        .get(serviceUrls.sso.profile.load.frontEnd, membership.ensureAuthenticated, function * (next) {
             if (config.mock) {
                 return this.body = {
                     isSuccess: true,
@@ -147,11 +155,16 @@ module.exports = function (app, router, parse) {
             this.body = yield proxy.call(this, {
                 host: config.sso.inner.host,
                 port: config.sso.inner.port,
-                path: serviceUrls.sso.profile.load.upstream.replace(':member_id', this.state.hcd_user.member_id),
+                path: serviceUrls
+                    .sso
+                    .profile
+                    .load
+                    .upstream
+                    .replace(':member_id', this.state.hcd_user.member_id),
                 method: 'GET'
             });
         })
-        .put(serviceUrls.sso.signUp.frontEnd, parseData, function* validateForm(next) {
+        .put(serviceUrls.sso.signUp.frontEnd, parseData, function * validateForm(next) {
             let data = this.upstreamData;
 
             if (!data.agreed) {
@@ -162,7 +175,7 @@ module.exports = function (app, router, parse) {
             }
 
             yield next;
-        }, validateSms, function* (next) {
+        }, validateSms, function * (next) {
             let data = this.upstreamData;
 
             this.body = yield proxy.call(this, {
@@ -175,7 +188,7 @@ module.exports = function (app, router, parse) {
         })
         .post(serviceUrls.sso.profile.update.frontEnd, membership.ensureAuthenticated, updateProfile)
         .post(serviceUrls.sso.profile.changeMobile.frontEnd, parseData, membership.ensureAuthenticated, validateSms, updateProfile)
-        .post(serviceUrls.sso.profile.changePassword.frontEnd, membership.ensureAuthenticated, function* () {
+        .post(serviceUrls.sso.profile.changePassword.frontEnd, membership.ensureAuthenticated, function * () {
             let data = yield parse(this.request);
             data.member_id = this.state.hcd_user.member_id;
 
@@ -185,7 +198,7 @@ module.exports = function (app, router, parse) {
                 data: data
             }, proxyOption));
         })
-        .post(serviceUrls.sso.resetPassword.frontEnd, parseData, validateSms, function* () {
+        .post(serviceUrls.sso.resetPassword.frontEnd, parseData, validateSms, function * () {
             let data = this.upstreamData;
 
             this.body = yield proxy(Object.assign({
