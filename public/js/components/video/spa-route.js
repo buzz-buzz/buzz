@@ -20,7 +20,6 @@ angular.module('spaModule')
                 return $http.get('/api/videos/' + videoSrc)
                     .then(function (result) {
                         var status = result.data;
-                        status.status = 'done';
                         if (status.status !== 'done') {
                             return $q.reject('processing');
                         } else {
@@ -95,8 +94,9 @@ angular.module('spaModule')
                 var temp = dialogueList[rand];
                 dialogueList[rand] = dialogueList[i];
                 dialogueList[i] = temp;
+                console.log(rand);
+                console.log(temp);
             }
-            
         };
 
         $scope.loading = true;
