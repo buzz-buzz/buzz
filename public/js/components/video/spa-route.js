@@ -94,8 +94,6 @@ angular.module('spaModule')
                 var temp = dialogueList[rand];
                 dialogueList[rand] = dialogueList[i];
                 dialogueList[i] = temp;
-                console.log(rand);
-                console.log(temp);
             }
         };
 
