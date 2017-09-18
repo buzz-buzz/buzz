@@ -266,7 +266,6 @@ angular.module('spaModule')
 
         $scope.doNothing = function () {
             event.preventDefault();
-            console.log('==Default==');
         };
 
         $rootScope.shareToFriends = function () {
@@ -483,6 +482,10 @@ angular.module('spaModule')
                     label: '卡通效果'
                 });
             }
+            var video = document.getElementsByTagName('video')[0];
+            video.addEventListener('play', function () {
+                jwplayer('video-uploaded').remove();
+            })
             var videoPlayer = jwplayer('video-uploaded').setup(options);
             $scope.$emit('//video-player:got', videoPlayer)
         })
