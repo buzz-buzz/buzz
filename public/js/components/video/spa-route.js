@@ -56,7 +56,6 @@ angular.module('spaModule')
                     },
                     transformRequest: requestTransformers.transformToFormData
                 }).then(function (res) {
-
                     if (res.data && res.data.video_id) {
                         $location.path('/video-preview/' + res.data.video_id);
                     } else {
@@ -227,12 +226,25 @@ angular.module('spaModule')
                                 $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
                                 if ($scope.videoStatus.score > 30) {
                                     showGoodScoreDimmer();
-                                    ////service-proxy/buzz/video/status/:member_id/:video_id/:status
-                                    //todo：调用api 修改视频状态为 3 处理完成，待审核
+                                    ////service-proxy/buzz/video/status/:upload_month/:video_id/:status
+                                    //调用api 修改视频状态为 3 处理完成，待审核
+
+                                    $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status'.replace(':upload_month', videoInfo.data.upload_month)
+                                        .replace(':video_id', videoInfo.data.video_id).replace(':status', '3'), {score: $scope.videoStatus.score})
+                                        .then(function () {
+
+                                        });
                                 } else {
                                     showBadScoreDimmer();
-                                    ////service-proxy/buzz/video/status/:member_id/:video_id/:status
-                                    //todo：调用api 修改视频状态为 0 offline,下线
+                                    ////service-proxy/buzz/video/status/:upload_month/:video_id/:status
+                                    //调用api 修改视频状态为 0 offline,下线  给下线原因为语音识别分数过低
+                                    $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status/:remark'
+                                        .replace(':upload_month', videoInfo.data.upload_month)
+                                        .replace(':video_id', videoInfo.data.video_id).replace(':status', '0')
+                                        .replace(':remark', 'pronunciation'), {score: $scope.videoStatus.score})
+                                        .then(function () {
+
+                                        });
                                 }
                             }
                             hideProcessing();
@@ -277,9 +289,9 @@ angular.module('spaModule')
                         document.getElementById('video-uploaded').style.opacity = '0';
                         $('#dimmer-video').dimmer('show');
                     }).catch(function (reason) {
-                        $scope.loading = false;
-                        alert(reason);
-                    });
+                    $scope.loading = false;
+                    alert(reason);
+                });
             });
         };
         $rootScope.closeDimmer = function () {
@@ -398,9 +410,9 @@ angular.module('spaModule')
                         document.getElementById('video-uploaded').style.opacity = '0';
                         $('#dimmer-video').dimmer('show');
                     }).catch(function (reason) {
-                        $scope.loading = false;
-                        alert(reason);
-                    });
+                    $scope.loading = false;
+                    alert(reason);
+                });
             });
         };
         $rootScope.closeDimmer = function () {

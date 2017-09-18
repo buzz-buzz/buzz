@@ -53,18 +53,18 @@ module.exports = function (app, router, parse) {
                 }
             }, proxyOption));
         })
-        .get('/service-proxy/buzz/video/status/:member_id/:video_id/:status', membership.setHcdUserIfSignedIn, function* () {
+        .post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status/:remark?', membership.setHcdUserIfSignedIn, function* () {
             let video_id = this.params.video_id;
             let status = this.params.status;
-            let member_id = '00000000-0000-0000-0000-000000000000';
-            if (this.state.hcd_user && this.state.hcd_user.member_id) {
-                member_id = this.state.hcd_user.member_id;
-            }
+            let upload_month = this.params.upload_month;
+            let remark = this.params.remark || '';
+            let data = yield parse(this.request);
 
             this.body = yield proxy(Object.assign({
-                path: '/video/path/status/:member_id/:video_id/:status'.replace(':member_id', member_id)
-                    .replace(':video_id', video_id).replace(':status', status),
-                method: 'POST'
+                path: '/video/path/status/:upload_month/:video_id/:status/:remark?'.replace(':upload_month', upload_month)
+                    .replace(':video_id', video_id).replace(':status', status).replace(':remark?', remark),
+                method: 'POST',
+                data: data
             }, proxyOption));
         })
         .get('/service-proxy/buzz/video/info/:video_id', membership.setHcdUserIfSignedIn, function* () {
