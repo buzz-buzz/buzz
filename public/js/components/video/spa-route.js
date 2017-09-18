@@ -211,57 +211,66 @@ angular.module('spaModule')
             $scope.hideVideo = true;
         }
 
+        function showOffLineDimmer(){
+            $('#dimmer-off-line').dimmer('show');
+            $scope.hideVideo = true;
+        }
+
         function getVideoStatus() {
             $scope.loading = true;
             //get src
             api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
                 .then(function (videoInfo) {
                     if (videoInfo.data && videoInfo.data.video_path) {
-                        videoStatus.get(atob(videoInfo.data.video_path)).then(function (status) {
-                            hideProcessing();
-                            hideError();
-                            $scope.videoStatus = status;
-                            $scope.$broadcast('//video-info:got', status);
-                            if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
-                                $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
-                                if ($scope.videoStatus.score > 30) {
-                                    showGoodScoreDimmer();
-                                    ////service-proxy/buzz/video/status/:upload_month/:video_id/:status
-                                    //调用api 修改视频状态为 3 处理完成，待审核
+                        if(videoInfo.data.status === 0){
+                            showOffLineDimmer();
+                        }else{
+                            videoStatus.get(atob(videoInfo.data.video_path)).then(function (status) {
+                                hideProcessing();
+                                hideError();
+                                $scope.videoStatus = status;
+                                $scope.$broadcast('//video-info:got', status);
+                                if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
+                                    $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
+                                    if ($scope.videoStatus.score > 30) {
+                                        showGoodScoreDimmer();
+                                        ////service-proxy/buzz/video/status/:upload_month/:video_id/:status
+                                        //调用api 修改视频状态为 3 处理完成，待审核
 
-                                    $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status'.replace(':upload_month', videoInfo.data.upload_month)
-                                        .replace(':video_id', videoInfo.data.video_id).replace(':status', '3'), {score: $scope.videoStatus.score})
-                                        .then(function () {
+                                        $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status'.replace(':upload_month', videoInfo.data.upload_month)
+                                            .replace(':video_id', videoInfo.data.video_id).replace(':status', '3'), {score: $scope.videoStatus.score})
+                                            .then(function () {
 
-                                        });
-                                } else {
-                                    showBadScoreDimmer();
-                                    ////service-proxy/buzz/video/status/:upload_month/:video_id/:status
-                                    //调用api 修改视频状态为 0 offline,下线  给下线原因为语音识别分数过低
-                                    $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status/:remark'
-                                        .replace(':upload_month', videoInfo.data.upload_month)
-                                        .replace(':video_id', videoInfo.data.video_id).replace(':status', '0')
-                                        .replace(':remark', 'pronunciation'), {score: $scope.videoStatus.score})
-                                        .then(function () {
+                                            });
+                                    } else {
+                                        showBadScoreDimmer();
+                                        ////service-proxy/buzz/video/status/:upload_month/:video_id/:status
+                                        //调用api 修改视频状态为 0 offline,下线  给下线原因为语音识别分数过低
+                                        $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status/:remark'
+                                            .replace(':upload_month', videoInfo.data.upload_month)
+                                            .replace(':video_id', videoInfo.data.video_id).replace(':status', '0')
+                                            .replace(':remark', 'pronunciation'), {score: $scope.videoStatus.score})
+                                            .then(function () {
 
-                                        });
+                                            });
+                                    }
                                 }
-                            }
-                            hideProcessing();
-                            hideError();
-                        }).catch(function (reason) {
-                            if (reason === 'processing') {
-                                showProcessing();
+                                hideProcessing();
+                                hideError();
+                            }).catch(function (reason) {
+                                if (reason === 'processing') {
+                                    showProcessing();
 
-                                $timeout(function () {
-                                    getVideoStatus();
-                                }, 15000);
-                            } else {
-                                showError();
-                            }
-                        }).finally(function () {
-                            $scope.loading = false;
-                        });
+                                    $timeout(function () {
+                                        getVideoStatus();
+                                    }, 15000);
+                                } else {
+                                    showError();
+                                }
+                            }).finally(function () {
+                                $scope.loading = false;
+                            });
+                        }
                     } else {
                         showError();
                     }
@@ -497,16 +506,16 @@ angular.module('spaModule')
             var video = document.getElementsByTagName('video')[0];
             video.addEventListener('play', function () {
                 jwplayer('video-uploaded').remove();
-            })
+            });
             var videoPlayer = jwplayer('video-uploaded').setup(options);
             $scope.$emit('//video-player:got', videoPlayer)
-        })
+        });
 
         function videoInfoGet() {
             var dfd = $q.defer();
             $scope.$on('//video-info:got', function (event, status) {
                 dfd.resolve(status);
-            })
+            });
             return dfd.promise;
         }
     }]);

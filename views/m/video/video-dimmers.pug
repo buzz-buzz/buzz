@@ -9,9 +9,13 @@
         img(src='//resource.buzzbuzzenglish.com/button.png', style="width: 30%;")
         .link(style="position: absolute; top: 0; width: 100%; text-align: center; padding-top: 0.25rem; font-size: 12px; font-weight: bolder") 刷新一下
 .ui.dimmer#dimmer-error
-    .ui.loading.inverted.segment(ng-if="loading")
+    .ui.inverted.segment
     .content
         p 在获取视频信息时碰到了错误，请稍后回来查看……
+.ui.dimmer#dimmer-off-line
+    .ui.inverted.segment
+    .content
+        p 该视频不符合要求，或者已被用户删除……
 .ui.dimmer#dimmer-good-score
     .content(style="position: relative;")
         img.center-block(ng-src="//resource.buzzbuzzenglish.com/video-grade-success.png", style='width: 80%; padding-top: 3rem;')
