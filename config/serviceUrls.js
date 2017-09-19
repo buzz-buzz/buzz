@@ -90,8 +90,8 @@ module.exports = {
                 upstream: '/courses/:level/true'
             },
             findByDate: {
-                frontEnd: '/service-proxy/buzz/courses/:category/:level/dates/:date',
-                upstream: '/courses/:category/:level/dates/:date'
+                frontEnd: '/service-proxy/buzz/courses/:category/:level/dates/:date/:lesson_id?',
+                upstream: '/courses/:category/:level/dates/:date/:lesson_id?'
             },
             latest: {
                 frontEnd: '/service-proxy/buzz/courses/:level/latest',

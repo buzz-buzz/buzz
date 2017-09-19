@@ -121,11 +121,11 @@ block content
                                  .column
                                      .ui.card.grid(style='width: 100%;min-width: 300px;')
                                          .row(style='padding: 1rem;')
-                                             #responsive1.six.wide.column(ng-click='aLikeClick("/my/play?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level)', ng-cloak)
+                                             #responsive1.six.wide.column(ng-click='aLikeClick("/my/play?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level+"&lesson_id="+lesson.lesson_id)', ng-cloak)
                                                  img.list-image(style="width:100%; cursor:pointer;",ng-src="{{lesson.image}}")
                                              #responsive2.ten.wide.column.ui.card(style='box-shadow: none;')
                                                  .content(style='font-size: 1em; height: 70%;')
-                                                     .description(style='color: #f7b52a; font-weight:bold; cursor:pointer; white-space: normal; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; margin-bottom: 1rem; font-size: 1.5rem;', ng-click='aLikeClick("/my/play?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level)', ng-cloak) {{lesson.title}}
+                                                     .description(style='color: #f7b52a; font-weight:bold; cursor:pointer; white-space: normal; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; margin-bottom: 1rem; font-size: 1.5rem;', ng-click='aLikeClick("/my/play?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level+"&lesson_id="+lesson.lesson_id)', ng-cloak) {{lesson.title}}
                                                      .meta(style='position: relative;')
                                                          span.date(ng-cloak) {{lesson.date}}
                                                          .tag-meta(ng-show='lesson.tags.length !== 0', ng-cloak)
@@ -135,12 +135,12 @@ block content
                                                      .ui.grid
                                                          .row
                                                              .eight.wide.column
-                                                                 a(ng-click='aLikeClick("/my/play?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level)', ng-cloak)
+                                                                 a(ng-click='aLikeClick("/my/play?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level+"&lesson_id="+lesson.lesson_id)', ng-cloak)
                                                                      i.users.icon
                                                                      span(ng-cloak, style='color: #f7b52a;') {{lesson.baseNumber || 0}}人
                                                                      span 参加课程
                                                              .eight.wide.column
-                                                                 a(ng-click='aLikeClick("/my/play?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level)', ng-cloak)
+                                                                 a(ng-click='aLikeClick("/my/play?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level+"&lesson_id="+lesson.lesson_id)', ng-cloak)
                                                                      i.student.icon
                                                                      span(ng-cloak, style='color: #f7b52a;') {{lesson.visited_time || 0}}人
                                                                      span 完成学习

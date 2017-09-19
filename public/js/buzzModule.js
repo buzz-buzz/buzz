@@ -66,7 +66,7 @@ angular.module('buzzModule', ['angularQueryParserModule', 'servicesModule', 'cli
         function getLesson() {
             var query = queryParser.parse();
 
-            return $http.get(clientConfig.serviceUrls.buzz.courses.findByDate.frontEnd.replace(':category', query.cat).replace(':level', query.level).replace(':date', query.date));
+            return $http.get(clientConfig.serviceUrls.buzz.courses.findByDate.frontEnd.replace(':category', query.cat).replace(':level', query.level).replace(':date', query.date).replace(':lesson_id?', query.lesson_id || ''));
         }
 
         getLesson()

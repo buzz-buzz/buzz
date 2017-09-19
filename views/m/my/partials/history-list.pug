@@ -2,10 +2,10 @@ a(name='top')
 .history-list(style='margin-bottom: 2em;', ng-repeat="lesson in allCourseData track by $index")
     .ui.card(style="width: 100%;")
         .image(style="height: 211px;")
-            image.ui.fluid.image(ng-src="{{lesson.image}}", ng-click='aLikeClick("/m/my/today?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level)')
+            image.ui.fluid.image(ng-src="{{lesson.image}}", ng-click='aLikeClick("/m/my/today?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level+"&lesson_id="+lesson.lesson_id)')
         .content(style='font-size:2em;')
             .meta
-                .description(style='color: #f7b52a; font-size: 2.2rem;', ng-click='aLikeClick("/m/my/today?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level)', ng-cloak) {{lesson.title}}
+                .description(style='color: #f7b52a; font-size: 2.2rem;', ng-click='aLikeClick("/m/my/today?date="+lesson.date+"&cat="+ lesson.category.toLowerCase()+"&level="+lesson.level+"&lesson_id="+lesson.lesson_id)', ng-cloak) {{lesson.title}}
                 span.date(ng-cloak) {{lesson.date}}
                 .tag-meta(ng-show='lesson.tags.length !== 0', ng-cloak)
                     .tags(ng-repeat="tag in lesson.tags track by $index")

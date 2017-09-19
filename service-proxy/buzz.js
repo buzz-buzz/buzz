@@ -71,7 +71,7 @@ module.exports = function (app, router, parse) {
             this.body = yield proxy.call(this, {
                 host: config.buzz.inner.host,
                 port: config.buzz.inner.port,
-                path: Router.url(serviceUrls.buzz.courses.findByDate.upstream, {
+                path: Router.url(serviceUrls.buzz.courses.findByDate.upstream.replace(':lesson_id?', this.params.lesson_id || ''), {
                     category: this.params.category.toUpperCase(),
                     level: this.params.level,
                     date: this.params.date
