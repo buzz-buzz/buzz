@@ -18,9 +18,8 @@ const proxy = require('../../service-proxy/proxy');
 
 const proxyOption = {
     host: config.buzz.inner.host,
-    port: config.buzz.inner.port,
+    port: config.buzz.inner.port
 };
-
 
 function yieldableExec(command) {
     return function (cb) {
@@ -30,11 +29,9 @@ function yieldableExec(command) {
 
 function pipeRequest(from, bucket) {
     return function (cb) {
-        from.pipe(request.put(
-            composeUrl(config.upload_qiniu.inner.host, config.upload_qiniu.inner.port, '/upload' + bucket), {},
-            function (err, response, body) {
-                cb(err, body);
-            }));
+        from.pipe(request.put(composeUrl(config.upload_qiniu.inner.host, config.upload_qiniu.inner.port, '/upload' + bucket), {}, function (err, response, body) {
+            cb(err, body);
+        }));
     };
 }
 
@@ -62,7 +59,7 @@ module.exports = function (app, router, render, server) {
 
     // app.use(koaBody({ multipart: true }));
 
-    function* renderVideoSPA() {
+    function * renderVideoSPA() {
         let view = '/video';
         if (true || this.state.userAgent.isMobile) {
             view = '/m' + view;
@@ -83,25 +80,23 @@ module.exports = function (app, router, render, server) {
         .get('/video-preview/:video_id', saas.checkSaasReferer, membership.ensureAuthenticated, renderVideoSPA)
         .get('/video-share/:video_id/:member_id?', saas.checkSaasReferer, renderVideoSPA)
         .get('/video-list', saas.checkSaasReferer, renderVideoSPA)
-        .put('/videos', function* (next) {
+        .put('/videos', function * (next) {
             try {
-                if (!this.request.is('multipart/*')) return yield next;
-
+                if (!this.request.is('multipart/*')) 
+                    return yield next;
+                
                 this.body = yield pipeRequest(this.req, '/buzz-video');
             } catch (ex) {
                 this.throw(ex);
             }
         })
-        // .post('/videos', function* (next) {
-        //     const file = this.request.body.files.file;
-        //     const reader = fs.createReadStream(file.path);
-        //     const stream = fs.createWriteStream(path.join(os.tmpdir(), Math.random().toString()));
-        //     reader.pipe(stream);
-        //     console.log('uploading %s ---> %s', file.name, stream.path);
-
-        //     this.body = stream.path;
-        // })
-        .post('/videos', membership.setHcdUserIfSignedIn, function* (next) {
+        // .post('/videos', function* (next) {     const file =
+        // this.request.body.files.file;     const reader =
+        // fs.createReadStream(file.path);     const stream =
+        // fs.createWriteStream(path.join(os.tmpdir(), Math.random().toString()));
+        // reader.pipe(stream);     console.log('uploading %s ---> %s', file.name,
+        // stream.path);     this.body = stream.path; })
+        .post('/videos', membership.setHcdUserIfSignedIn, function * (next) {
             let parts = parse(this);
             let part;
 
@@ -118,11 +113,15 @@ module.exports = function (app, router, render, server) {
 
                     let stream = fs.createWriteStream(videoStoredPath);
                     part.pipe(stream);
-                    console.log('uploading %s --> %s', part.filename, stream.path);
                 } else {
-                    console.log('generating vtt: %s.', vttStoredPath);
-                    dialogue = part[1];
-                    videoBll.generateVtt(vttStoredPath, part[1]);
+                    if (part[0] === 'subtitle') {
+                        dialogue = part[1];
+                        videoBll.generateVtt(vttStoredPath, part[1]);
+                    }
+
+                    if (part[0] === 'recipes') {
+                        fs.writeFileSync(vttStoredPath.replace('.vtt', '.recipes').replace('exp-', ''), part[1]);
+                    }
                 }
             }
 
@@ -139,7 +138,8 @@ module.exports = function (app, router, render, server) {
             }
 
             let video_data = yield proxy(Object.assign({
-                path: '/video/path/:member_id/:path'.replace(':member_id', member_id)
+                path: '/video/path/:member_id/:path'
+                    .replace(':member_id', member_id)
                     .replace(':path', Buffer(`/videos/${encodedPath}`).toString('base64')),
                 method: 'POST',
                 data: {
@@ -150,7 +150,7 @@ module.exports = function (app, router, render, server) {
             this.body = video_data;
 
         })
-        .get('/videos/:path', function* (next) {
+        .get('/videos/:path', function * (next) {
             let fpath = new Buffer(this.params.path.replace('.mp4', '').replace('.vtt', ''), 'base64').toString();
 
             if (fpath.endsWith('.mp4') && !fs.existsSync(fpath)) {
@@ -166,8 +166,7 @@ module.exports = function (app, router, render, server) {
 
                 if (fstat.isFile()) {
                     // this.set('Content-disposition', `inline; filename=${path.basename(fpath)}`);
-                    // this.set('Content-Transfer-Encoding', 'binary');
-                    // this.type = extname(fpath);
+                    // this.set('Content-Transfer-Encoding', 'binary'); this.type = extname(fpath);
                     // this.body = fs.createReadStream(fpath);
                     yield stream.file(this, path.basename(fpath), {
                         root: path.dirname(fpath),

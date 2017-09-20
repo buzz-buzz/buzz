@@ -43,17 +43,19 @@ function getURIAddress(path) {
 function getURIAddresses(pathObj) {
     let ret = {};
 
-    Object.keys(pathObj).map(key => {
-        if (fs.existsSync(pathObj[key])) {
-            ret[key] = getURIAddress(pathObj[key]);
-        }
-    });
+    Object
+        .keys(pathObj)
+        .map(key => {
+            if (fs.existsSync(pathObj[key])) {
+                ret[key] = getURIAddress(pathObj[key]);
+            }
+        });
 
     return ret;
 }
 
 module.exports = {
-    playable: function* () {
+    playable: function * () {
         if (this.state.hcd_user) {
             this.body = {
                 start: -Infinity,
@@ -80,17 +82,15 @@ module.exports = {
     ugcPaths: function (fileName) {
         let base = this.ugcPath();
 
-        let r = Math.random().toString();
+        let r = Math
+            .random()
+            .toString();
         r = r.substr(r.length - 5);
         let videoStoredPath = path.join(base, `${r}${fileName}`);
         let vttStoredPath = getVttStoredPath(videoStoredPath);
         let expectedVttPath = getExpectedVttStoredPath(videoStoredPath);
 
-        return {
-            raw: videoStoredPath,
-            vtt: vttStoredPath,
-            expVtt: expectedVttPath
-        };
+        return {raw: videoStoredPath, vtt: vttStoredPath, expVtt: expectedVttPath};
     },
 
     generateVtt: function (vttPath, dialog) {
@@ -137,7 +137,17 @@ ${dialog}
         }
 
         if (!fs.existsSync(vttPath)) {
-            this.asyncGenerateVtt(videoStoredPath);
+            let r = ['recipe_nose'];
+
+            try {
+                r[0] = fs
+                    .readFileSync(vttPath.replace('.vtt', '.recipes'))
+                    .toString();
+            } catch (ex) {
+                // do nothing
+            }
+
+            this.asyncGenerateVtt(videoStoredPath, r);
             result.status = 'recognizing';
             delete result.actualVtt;
             return result;
@@ -156,14 +166,15 @@ ${dialog}
         return result;
     },
 
-    asyncGenerateVtt: function (videoPath) {
+    asyncGenerateVtt: function (videoPath, recipes) {
         asyncProxy({
             host: config.hongda.host,
             port: config.hongda.port,
             path: '/recognize',
             method: 'POST',
             data: {
-                videoPath: videoPath
+                videoPath: videoPath,
+                recipes: recipes
             }
         });
     }
