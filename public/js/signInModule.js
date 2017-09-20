@@ -14,6 +14,7 @@ angular.module('signInModule', ['angularQueryParserModule', 'clientConfigModule'
             '/m/my/my': '登录成功，正在跳转至【我的】页面……',
             '/my/account': '登录成功，正在跳转至账号信息页面……'
         });
+
         $translateProvider.preferredLanguage('zh');
     }])
     .controller('signInCtrl', ['$scope', 'clientConfig', 'service', 'queryParser', 'serviceErrorParser', 'tracking', '$timeout', function ($scope, clientConfig, service, queryParser, serviceErrorParser, tracking, $timeout) {
@@ -25,17 +26,19 @@ angular.module('signInModule', ['angularQueryParserModule', 'clientConfigModule'
         $scope.signIn = function () {
             tracking.sendX('log-in.login.beforeClick');
             service.post(clientConfig.serviceUrls.sso.signIn.frontEnd, {
-                value: $scope.signInData.account,
-                password: $scope.signInData.password,
-                return_url: queryParser.get('return_url'),
-                token: queryParser.get('token')
-            })
+                    value: $scope.signInData.account,
+                    password: $scope.signInData.password,
+                    return_url: queryParser.get('return_url'),
+                    token: queryParser.get('token'),
+
+                })
                 .then(function (result) {
                     tracking.sendX('log-in.login.afterClick');
                     return result;
                 })
                 .catch(function (reason) {
-                    $scope.errorMessage = serviceErrorParser.getErrorMessage(reason);
+                    var Message = reason.message.replace(/(\?[a-z]=.*\d)-[0-9]{1}-[0-9]{1}-[0-9]{13}(&[a-z]=.*\d{13})/g, '');
+                    $scope.errorMessage = serviceErrorParser.getErrorMessage(Message);
                     tracking.sendX('log-in.login.afterClick.error', reason);
                 });
         };
@@ -60,5 +63,4 @@ angular.module('signInModule', ['angularQueryParserModule', 'clientConfigModule'
     }])
     .controller('signInParentCtrl', ['$scope', function ($scope) {
         $scope.queryString = location.search;
-    }])
-    ;
+    }]);

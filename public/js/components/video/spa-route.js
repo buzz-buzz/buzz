@@ -132,6 +132,7 @@ angular.module('spaModule')
                     $scope.dialogueIndex++;
                 } else {
                     $scope.dialogueIndex = 0;
+
                 }
                 $scope.formData.subtitle = $scope.dialogueList[$scope.dialogueIndex];
             }
@@ -211,7 +212,7 @@ angular.module('spaModule')
             $scope.hideVideo = true;
         }
 
-        function showOffLineDimmer(){
+        function showOffLineDimmer() {
             $('#dimmer-off-line').dimmer('show');
             $scope.hideVideo = true;
         }
@@ -222,9 +223,9 @@ angular.module('spaModule')
             api.get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
                 .then(function (videoInfo) {
                     if (videoInfo.data && videoInfo.data.video_path) {
-                        if(videoInfo.data.status === 0){
+                        if (videoInfo.data.status === 0) {
                             showOffLineDimmer();
-                        }else{
+                        } else {
                             videoStatus.get(atob(videoInfo.data.video_path)).then(function (status) {
                                 hideProcessing();
                                 hideError();
@@ -238,7 +239,9 @@ angular.module('spaModule')
                                         //调用api 修改视频状态为 3 处理完成，待审核
 
                                         $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status'.replace(':upload_month', videoInfo.data.upload_month)
-                                            .replace(':video_id', videoInfo.data.video_id).replace(':status', '3'), {score: $scope.videoStatus.score})
+                                                .replace(':video_id', videoInfo.data.video_id).replace(':status', '3'), {
+                                                    score: $scope.videoStatus.score
+                                                })
                                             .then(function () {
 
                                             });
@@ -247,9 +250,11 @@ angular.module('spaModule')
                                         ////service-proxy/buzz/video/status/:upload_month/:video_id/:status
                                         //调用api 修改视频状态为 0 offline,下线  给下线原因为语音识别分数过低
                                         $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status/:remark'
-                                            .replace(':upload_month', videoInfo.data.upload_month)
-                                            .replace(':video_id', videoInfo.data.video_id).replace(':status', '0')
-                                            .replace(':remark', 'pronunciation'), {score: $scope.videoStatus.score})
+                                                .replace(':upload_month', videoInfo.data.upload_month)
+                                                .replace(':video_id', videoInfo.data.video_id).replace(':status', '0')
+                                                .replace(':remark', 'pronunciation'), {
+                                                    score: $scope.videoStatus.score
+                                                })
                                             .then(function () {
 
                                             });
@@ -298,9 +303,9 @@ angular.module('spaModule')
                         document.getElementById('video-uploaded').style.opacity = '0';
                         $('#dimmer-video').dimmer('show');
                     }).catch(function (reason) {
-                    $scope.loading = false;
-                    alert(reason);
-                });
+                        $scope.loading = false;
+                        alert(reason);
+                    });
             });
         };
         $rootScope.closeDimmer = function () {
@@ -419,9 +424,9 @@ angular.module('spaModule')
                         document.getElementById('video-uploaded').style.opacity = '0';
                         $('#dimmer-video').dimmer('show');
                     }).catch(function (reason) {
-                    $scope.loading = false;
-                    alert(reason);
-                });
+                        $scope.loading = false;
+                        alert(reason);
+                    });
             });
         };
         $rootScope.closeDimmer = function () {
