@@ -35,9 +35,9 @@ angular.module('spaModule')
     .controller('videoCtrl', ['$scope', '$rootScope', '$http', 'requestTransformers', '$location', '$timeout', 'api', function ($scope, $rootScope, $http, requestTransformers, $location, $timeout, api) {
         $scope.formData = {
             video: null,
-            subtitle: 'I like drawing, and walking in nature'
+            subtitle: '',
+            recipes: ['recipe_nose']
         };
-
         $scope.uploadAgainTag = false;
         $scope.changeDialogueTag = false;
         $scope.random = false;
@@ -48,7 +48,8 @@ angular.module('spaModule')
                 $scope.uploading = true;
                 $http.post('/videos', {
                     file: file,
-                    subtitle: $scope.formData.subtitle
+                    subtitle: $scope.formData.subtitle,
+                    recipes: $scope.formData.recipes
                 }, {
                     headers: {
                         'X-Requested-With': undefined,

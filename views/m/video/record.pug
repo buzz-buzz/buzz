@@ -22,6 +22,20 @@ script(type="text/ng-template", id="video.html")
                         span 时长不超过
                         span(style='font-size: 1.5em; color: red;') 30
                         span 秒
+                .ui.form
+                    .inline.fields
+                        .field
+                            .ui.checkbox
+                                input(type="checkbox", ng-model="formData.recipes", ng-true-value="'recipe_sun_glasses'", id="sun_glasses")
+                                label(for="sun_glasses") sun_glasses
+                        .field
+                            .ui.checkbox
+                                input(type="checkbox", ng-model="formData.recipes" ng-true-value="'recipe_moustache'", id="moustache")
+                                label(for="moustache") moustache
+                        .field
+                            .ui.checkbox
+                                input(type="checkbox", ng-model="formData.recipes" ng-true-value="'recipe_nose'", id="nose")
+                                label(for="nose") nose
                 .form-group
                     button.ui.yellow.button.center-block(style='font-size: 2rem; border-radius: 0; letter-spacing: 3px; position: relative; font-family:"HYxindipaofu"') 我记住了,开始录制
                         input#video-file.form-control(type="file", accept="video/*", capture="camcorder", style='position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0;', onchange="angular.element(this).scope().videoChange()")
