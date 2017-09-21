@@ -15,6 +15,7 @@ const greenSharedLogger = require('../../common/logger')('/routes/more/video.js'
 const videoBll = require('../../bll/video');
 const membership = require('../../membership');
 const proxy = require('../../service-proxy/proxy');
+const formParser = require('../../common/form-parser');
 
 const proxyOption = {
     host: config.buzz.inner.host,
@@ -105,6 +106,8 @@ module.exports = function (app, router, render, server) {
             let srtStoredPath = '';
             let vttStoredPath = '';
             let dialogue = 'no dialogue';
+
+            let formData = {};
             while ((part = yield parts)) {
                 if (part && part.filename) {
                     ugcPaths = videoBll.ugcPaths(part.filename);
@@ -114,19 +117,20 @@ module.exports = function (app, router, render, server) {
                     let stream = fs.createWriteStream(videoStoredPath);
                     part.pipe(stream);
                 } else {
-                    if (part[0] === 'subtitle') {
-                        dialogue = part[1];
-                        videoBll.generateVtt(vttStoredPath, part[1]);
-                    }
-
-                    if (part[0] === 'recipes') {
-                        fs.writeFileSync(vttStoredPath.replace('.vtt', '.recipes').replace('exp-', ''), part[1]);
-                    }
+                    formParser.parse(formData, part);
                 }
+            }
+
+            if (formData.subtitle) {
+                videoBll.generateVtt(vttStoredPath, formData.subtitle);
             }
 
             if (!vttStoredPath || !fs.existsSync(vttStoredPath)) {
                 greenSharedLogger.error(`上传时没有生成期待的字幕文件！${vttStoredPath}`)
+            }
+
+            if (formData.recipes) {
+                fs.writeFileSync(vttStoredPath.replace('.vtt', '.recipes').replace('exp-', ''), JSON.stringify(formData.recipes));
             }
 
             let encodedPath = new Buffer(videoStoredPath).toString('base64');

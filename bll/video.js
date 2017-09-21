@@ -137,14 +137,12 @@ ${dialog}
         }
 
         if (!fs.existsSync(vttPath)) {
-            let r = ['recipe_nose'];
+            let r = [];
 
             try {
-                r[0] = fs
-                    .readFileSync(vttPath.replace('.vtt', '.recipes'))
-                    .toString();
+                r = JSON.parse(fs.readFileSync(vttPath.replace('.vtt', '.recipes')).toString());
             } catch (ex) {
-                // do nothing
+                r = ['recipe_nose'];
             }
 
             this.asyncGenerateVtt(videoStoredPath, r);

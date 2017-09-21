@@ -22,19 +22,21 @@ script(type="text/ng-template", id="video.html")
                         span 时长不超过
                         span(style='font-size: 1.5em; color: red;') 30
                         span 秒
-                .ui.form
+                .ui.form(ng-controller="recipesCtrl")
                     .inline.fields
                         .field
+                            h2.ui.header(style="background-color: transparent;") 特效：
+                        .field
                             .ui.checkbox
-                                input(type="checkbox", ng-model="formData.recipes", ng-true-value="'recipe_sun_glasses'", id="sun_glasses")
+                                input(type="checkbox", ng-model="formData.recipes.recipe_sun_glasses", ng-true-value="true", ng-false-value="false", id="sun_glasses", ng-click="checkRecipes($event)")
                                 label(for="sun_glasses") sun_glasses
                         .field
                             .ui.checkbox
-                                input(type="checkbox", ng-model="formData.recipes" ng-true-value="'recipe_moustache'", id="moustache")
+                                input(type="checkbox", ng-model="formData.recipes.recipe_moustache" ng-true-value="true", ng-false-value="false", id="moustache", ng-click="checkRecipes($event)")
                                 label(for="moustache") moustache
                         .field
                             .ui.checkbox
-                                input(type="checkbox", ng-model="formData.recipes" ng-true-value="'recipe_nose'", id="nose")
+                                input(type="checkbox", ng-model="formData.recipes.recipe_nose" ng-true-value="true", ng-false-value="false", id="nose", ng-click="checkRecipes($event)")
                                 label(for="nose") nose
                 .form-group
                     button.ui.yellow.button.center-block(style='font-size: 2rem; border-radius: 0; letter-spacing: 3px; position: relative; font-family:"HYxindipaofu"') 我记住了,开始录制
