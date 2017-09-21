@@ -1,4 +1,9 @@
 script(type="text/ng-template", id="video.html")
+    style.
+        .pasters label {position: relative; padding-left: 0;}
+        .pasters label input {position: absolute; right: 0; bottom:-5px; width: 100%; text-align: center;}
+        .pasters label img {max-width: 74px;}
+
     form.ui.form(ng-class="{'error': !!errorMessage, 'loading': uploading || loading}")
         include ../../partial/formMessage
         fieldset
@@ -23,21 +28,27 @@ script(type="text/ng-template", id="video.html")
                         span(style='font-size: 1.5em; color: red;') 30
                         span 秒
                 .ui.form(ng-controller="recipesCtrl")
-                    .inline.fields
+                    .inline.fields.pasters
                         .field
                             h2.ui.header(style="background-color: transparent;") 贴纸：
                         .field
-                            .ui.checkbox
-                                input(type="checkbox", ng-model="formData.recipes.recipe_sun_glasses", ng-true-value="true", ng-false-value="false", id="sun_glasses", ng-click="checkRecipes($event)")
-                                label(for="sun_glasses") sun_glasses
+                            .checkbox
+                                label(for="sun_glasses")
+                                    img(src="//resource.buzzbuzzenglish.com/image/png/recipe-sunglasses.png")
+                                    input(type="checkbox", ng-model="formData.recipes.recipe_sun_glasses", ng-true-value="true", ng-false-value="false", id="sun_glasses", ng-click="checkRecipes($event)")
+                                
                         .field
-                            .ui.checkbox
-                                input(type="checkbox", ng-model="formData.recipes.recipe_moustache" ng-true-value="true", ng-false-value="false", id="moustache", ng-click="checkRecipes($event)")
-                                label(for="moustache") moustache
+                            .checkbox
+                                label(for="moustache")
+                                    img(src="//resource.buzzbuzzenglish.com/image/png/recipe-moustache.png")
+                                    input(type="checkbox", ng-model="formData.recipes.recipe_moustache" ng-true-value="true", ng-false-value="false", id="moustache", ng-click="checkRecipes($event)")
+                                
                         .field
-                            .ui.checkbox
-                                input(type="checkbox", ng-model="formData.recipes.recipe_nose" ng-true-value="true", ng-false-value="false", id="nose", ng-click="checkRecipes($event)")
-                                label(for="nose") nose
+                            .checkbox 
+                                label(for="nose")
+                                    img(src="//resource.buzzbuzzenglish.com/image/png/recipe-nose.png")
+                                    input(type="checkbox", ng-model="formData.recipes.recipe_nose" ng-true-value="true", ng-false-value="false", id="nose", ng-click="checkRecipes($event)")
+                                
                 .form-group
                     button.ui.yellow.button.center-block(style='font-size: 2rem; border-radius: 0; letter-spacing: 3px; position: relative; font-family:"HYxindipaofu"') 我记住了,开始录制
                         input#video-file.form-control(type="file", accept="video/*", capture="camcorder", style='position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0;', onchange="angular.element(this).scope().videoChange()")
