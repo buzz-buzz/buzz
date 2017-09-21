@@ -4,6 +4,12 @@ const os = require('os');
 const config = require('../config');
 const fs = require('fs');
 const asyncProxy = require('../service-proxy/async-proxy');
+const Router = require('koa-router');
+const proxy = require('../service-proxy/proxy');
+const proxyOption = {
+    host: config.buzz.inner.host,
+    port: config.buzz.inner.port,
+};
 
 function getVttStoredPath(videoStoredPath) {
     let parsed = path.parse(videoStoredPath);
@@ -103,7 +109,39 @@ ${dialog}
         fs.writeFileSync(vttPath, vtt, 'utf-8');
     },
 
-    getStatusInfo: function (videoStoredPath) {
+    getStatusInfo: function*(videoId){
+        let videoData = yield this.getStatusInfoFromDb(videoId);
+        if(this.checkVideoDone(videoData)){
+            videoData.status = 'done';
+            return videoData;
+        }else{
+            let data = this.getStatusInfoFromFileSystem(videoData.video_path, videoData);
+            return data;
+        }
+    },
+
+    getStatusInfoFromFileSystem: function (videoStoredPath, videoData) {
+        console.log('get status from file system');
+        let encodedVideoSrc = new Buffer(videoStoredPath, 'base64').toString();
+        let decoded = decodeURIComponent(encodedVideoSrc);
+        let videoSrc = encodeURIComponent(decoded.replace('/videos/', ''));
+
+        let rawPath = new Buffer(videoSrc, 'base64').toString();
+        rawPath = rawPath.replace('subtitled-', '');
+        console.log('rawPath = ', rawPath);
+        if (!fs.existsSync(rawPath)) {
+            let parsed = path.parse(rawPath);
+            rawPath = `${parsed.dir}${path.sep}${parsed.name}.mp4`;
+            console.log('try rawPath = ', rawPath);
+        }
+        if (!fs.existsSync(rawPath)) {
+            let parsed = path.parse(rawPath);
+            rawPath = `${parsed.dir}${path.sep}${parsed.name}.MOV`;
+            console.log('try rawPath = ', rawPath);
+        }
+
+        videoStoredPath = rawPath;
+
         let expVttPath = getExpectedVttStoredPath(videoStoredPath);
         let vttPath = getVttStoredPath(videoStoredPath);
         let scorePath = getScorePath(videoStoredPath);
@@ -114,8 +152,8 @@ ${dialog}
         let result = {
             status: 'done',
             raw: getURIAddress(videoStoredPath),
-            vtt: getURIAddress(expVttPath),
-            actualVtt: getURIAddress(vttPath)
+            vtt: getURIAddress(expVttPath),//字幕文件 vtt
+            actualVtt: getURIAddress(vttPath)//识别后的 actualVtt
         };
 
         if (fs.existsSync(pasteredNosePath)) {
@@ -133,6 +171,7 @@ ${dialog}
         if (!fs.existsSync(expVttPath)) {
             result.status = 'nosub';
             delete result.vtt;
+            this.asyncSaveVideoStatus(videoData, result);
             return result;
         }
 
@@ -148,6 +187,7 @@ ${dialog}
             this.asyncGenerateVtt(videoStoredPath, r);
             result.status = 'recognizing';
             delete result.actualVtt;
+            this.asyncSaveVideoStatus(videoData, result);
             return result;
         }
 
@@ -158,10 +198,31 @@ ${dialog}
         if (!fs.existsSync(videoStoredPath)) {
             result.status = 'novideo';
             delete result.raw;
+            this.asyncSaveVideoStatus(videoData, result);
             return result;
         }
 
+        //异步存DB
+        this.asyncSaveVideoStatus(videoData, result);
         return result;
+    },
+
+    getStatusInfoFromDb: function*(videoId) {
+        //get video data from buzz-server
+        let path = Router.url('/video/path/info/:video_id', {
+            video_id: videoId
+        });
+
+        let videoData = yield proxy(Object.assign({
+            path: path,
+            method: 'GET'
+        }, proxyOption));
+
+        if(typeof videoData == 'string'){
+            videoData = JSON.parse(videoData);
+        }
+
+        return videoData;
     },
 
     asyncGenerateVtt: function (videoPath, recipes) {
@@ -175,5 +236,43 @@ ${dialog}
                 recipes: recipes
             }
         });
+    },
+
+    asyncSaveVideoStatus: function (videoData, data) {
+        data.actual_vtt = data.actualVtt || '';
+        if(data.status === 'done'){
+            data.status = 3;
+        }else{
+            data.status = 2;
+        }
+
+        if(data.score){
+            data.score = parseInt(parseFloat(data.score) * 100);
+            if(data.score > 30){
+                data.status = 3;
+            }else{
+                data.status = 0;
+                data.remark = 'low score, pronunciation';
+            }
+        }
+
+        delete data.actualVtt;
+        delete data.raw;
+
+        asyncProxy({
+            host: config.buzz.inner.host,
+            port: config.buzz.inner.port,
+            path: '/video/update/info/:video_id'.replace(':video_id', videoData.video_id),
+            method: 'POST',
+            data: data
+        });
+    },
+
+    checkVideoDone: function (video) {
+        if(video && video.score){
+            return true;
+        }else{
+            return false;
+        }
     }
 };

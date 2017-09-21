@@ -25,11 +25,9 @@ angular
         '$sce',
         function ($http, $q, $sce) {
             return {
-                get: function (encodedVideoSrc) {
-                    var decoded = decodeURIComponent(encodedVideoSrc);
-                    var videoSrc = encodeURIComponent(decoded.replace('/videos/', ''));
+                get: function (video_id) {
                     return $http
-                        .get('/api/videos/' + videoSrc)
+                        .get('/api/videos/' + video_id)
                         .then(function (result) {
                             var status = result.data;
                             if (status.status !== 'done') {
@@ -181,17 +179,17 @@ angular
                                                 // 修改视频状态为 3 处理完成，待审核
 
                                                 $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status'.replace(':upload_month', videoInfo.data.upload_month).replace(':video_id', videoInfo.data.video_id).replace(':status', '3'), {
-                                                        score: $scope.videoStatus.score
-                                                    })
-                                                    .then(function () {});
+                                                    score: $scope.videoStatus.score
+                                                })
+                                                    .then(function () { });
                                             } else {
                                                 showBadScoreDimmer();
                                                 // //service-proxy/buzz/video/status/:upload_month/:video_id/:status 调用api
                                                 // 修改视频状态为 0 offline,下线  给下线原因为语音识别分数过低
                                                 $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status/:remark'.replace(':upload_month', videoInfo.data.upload_month).replace(':video_id', videoInfo.data.video_id).replace(':status', '0').replace(':remark', 'pronunciation'), {
-                                                        score: $scope.videoStatus.score
-                                                    })
-                                                    .then(function () {});
+                                                    score: $scope.videoStatus.score
+                                                })
+                                                    .then(function () { });
                                             }
                                         }
                                         hideProcessing();
@@ -370,28 +368,34 @@ angular
                 .get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
                 .then(function (videoInfo) {
                     if (videoInfo.data && videoInfo.data.video_path) {
-                        return videoInfo.data.video_path;
-                    } else {
-                        return '';
-                    }
-                })
-                .then(function (src) {
-                    if (!src) {
-                        showError();
-                    } else {
-                        videoStatus
-                            .get(atob(src))
-                            .then(function (status) {
+                        if (videoInfo.data.status === 0) {
+                            showOffLineDimmer();
+                        } else {
+                            videoStatus.get(videoInfo.data.video_id).then(function (status) {
+                                hideProcessing();
+                                hideError();
                                 $scope.videoStatus = status;
                                 $scope.$broadcast('//video-info:got', status);
-                            })
-                            .catch(function (reason) {
+                                if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
+                                    if ($scope.videoStatus.score < 1) {
+                                        $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
+                                    }
+                                    if ($scope.videoStatus.score > 30) {
+                                        showGoodScoreDimmer();
+                                    } else {
+                                        showBadScoreDimmer();
+                                    }
+                                }
+                                hideProcessing();
+                                hideError();
+                            }).catch(function (reason) {
                                 if (reason === 'processing') {
                                     showProcessing();
                                 } else {
                                     showError();
                                 }
                             });
+                        }
                     }
                 });
 
