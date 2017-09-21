@@ -103,9 +103,7 @@ module.exports = function (app, router, render, server) {
 
             let ugcPaths;
             let videoStoredPath = '';
-            let srtStoredPath = '';
             let vttStoredPath = '';
-            let dialogue = 'no dialogue';
 
             let formData = {};
             while ((part = yield parts)) {
@@ -141,17 +139,15 @@ module.exports = function (app, router, render, server) {
                 member_id = this.state.hcd_user.member_id;
             }
 
-            let video_data = yield proxy(Object.assign({
+            this.body = yield proxy(Object.assign({
                 path: '/video/path/:member_id/:path'
                     .replace(':member_id', member_id)
                     .replace(':path', Buffer(`/videos/${encodedPath}`).toString('base64')),
                 method: 'POST',
                 data: {
-                    dialogue: dialogue
+                    dialogue: formData.subtitle
                 }
             }, proxyOption));
-
-            this.body = video_data;
 
         })
         .get('/videos/:path', function * (next) {
