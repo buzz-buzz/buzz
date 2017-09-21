@@ -144,7 +144,9 @@ angular
 
             function showBadScoreDimmer() {
                 $('#dimmer-bad-score')
-                    .dimmer({closable: true})
+                    .dimmer({
+                        closable: true
+                    })
                     .dimmer('show');
                 $scope.hideVideo = true;
             }
@@ -178,13 +180,17 @@ angular
                                                 // //service-proxy/buzz/video/status/:upload_month/:video_id/:status 调用api
                                                 // 修改视频状态为 3 处理完成，待审核
 
-                                                $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status'.replace(':upload_month', videoInfo.data.upload_month).replace(':video_id', videoInfo.data.video_id).replace(':status', '3'), {score: $scope.videoStatus.score})
+                                                $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status'.replace(':upload_month', videoInfo.data.upload_month).replace(':video_id', videoInfo.data.video_id).replace(':status', '3'), {
+                                                        score: $scope.videoStatus.score
+                                                    })
                                                     .then(function () {});
                                             } else {
                                                 showBadScoreDimmer();
                                                 // //service-proxy/buzz/video/status/:upload_month/:video_id/:status 调用api
                                                 // 修改视频状态为 0 offline,下线  给下线原因为语音识别分数过低
-                                                $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status/:remark'.replace(':upload_month', videoInfo.data.upload_month).replace(':video_id', videoInfo.data.video_id).replace(':status', '0').replace(':remark', 'pronunciation'), {score: $scope.videoStatus.score})
+                                                $http.post('/service-proxy/buzz/video/status/:upload_month/:video_id/:status/:remark'.replace(':upload_month', videoInfo.data.upload_month).replace(':video_id', videoInfo.data.video_id).replace(':status', '0').replace(':remark', 'pronunciation'), {
+                                                        score: $scope.videoStatus.score
+                                                    })
                                                     .then(function () {});
                                             }
                                         }
@@ -202,7 +208,7 @@ angular
                                             showError();
                                         }
                                     })
-                                    . finally(function () {
+                                    .finally(function () {
                                         $scope.loading = false;
                                     });
                             }
@@ -463,30 +469,24 @@ angular
                     var options = {
                         width: '100%',
                         aspectratio: metaData.videoWidth + ':' + metaData.videoHeight,
-                        playlist: [
-                            {
-                                description: status.description,
+                        playlist: [{
+                            description: status.description,
+                            image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
+                            stretching: 'none',
+                            sources: [{
+                                file: status.raw + '.mp4',
                                 image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
-                                stretching: 'none',
-                                sources: [
-                                    {
-                                        file: status.raw + '.mp4',
-                                        image: '//resource.buzzbuzzenglish.com/image/png/buzz-poster.png',
-                                        label: '原始文件'
-                                    }
-                                ]
-                            }
-                        ]
+                                label: '原始文件'
+                            }]
+                        }]
                     };
                     if (status.vtt) {
-                        options.playlist[0].tracks = [
-                            {
-                                file: status.vtt,
-                                kind: 'subtitles',
-                                label: 'English',
-                                'default': true
-                            }
-                        ];
+                        options.playlist[0].tracks = [{
+                            file: status.vtt,
+                            kind: 'subtitles',
+                            label: 'English',
+                            'default': true
+                        }];
                     }
                     if (status.pasteredNose) {
                         options
@@ -519,10 +519,6 @@ angular
                                 label: '卡通效果'
                             });
                     }
-                    var video = document.getElementsByTagName('video')[0];
-                    video.addEventListener('play', function () {
-                        jwplayer('video-uploaded').remove();
-                    });
                     var videoPlayer = jwplayer('video-uploaded').setup(options);
                     $scope.$emit('//video-player:got', videoPlayer)
                 });
