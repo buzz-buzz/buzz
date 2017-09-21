@@ -172,7 +172,9 @@ angular
                                         $scope.videoStatus = status;
                                         $scope.$broadcast('//video-info:got', status);
                                         if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
-                                            $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
+                                            if ($scope.videoStatus.score < 1) {
+                                                $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
+                                            }
                                             if ($scope.videoStatus.score > 30) {
                                                 showGoodScoreDimmer();
                                             } else {
