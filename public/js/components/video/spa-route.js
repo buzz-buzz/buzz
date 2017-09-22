@@ -498,8 +498,11 @@ angular
                                 label: '卡通效果'
                             });
                     }
-                    var videoPlayer = jwplayer('video-uploaded').setup(options);
-                    $scope.$emit('//video-player:got', videoPlayer)
+                    var video = document.getElementById('video-uploaded');
+                    if (video.currentTime === 0 || video.ended) {
+                        var videoPlayer = jwplayer('video-uploaded').setup(options);
+                        $scope.$emit('//video-player:got', videoPlayer)
+                    }
                 });
 
             function videoInfoGet() {
