@@ -156,52 +156,44 @@ angular
 
             function getVideoStatus() {
                 $scope.loading = true;
-                //get src
-                api
-                    .get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
-                    .then(function (videoInfo) {
-                        if (videoInfo.data && videoInfo.data.video_path) {
-                            if (videoInfo.data.status === 0) {
-                                showOffLineDimmer();
-                            } else {
-                                videoStatus
-                                    .get(videoInfo.data.video_id)
-                                    .then(function (status) {
-                                        hideProcessing();
-                                        hideError();
-                                        $scope.videoStatus = status;
-                                        $scope.$broadcast('//video-info:got', status);
-                                        if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
-                                            if ($scope.videoStatus.score < 1) {
-                                                $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
-                                            }
-                                            if ($scope.videoStatus.score > 30) {
-                                                showGoodScoreDimmer();
-                                            } else {
-                                                showBadScoreDimmer();
-                                            }
-                                        }
-                                        hideProcessing();
-                                        hideError();
-                                    })
-                                    .catch(function (reason) {
-                                        if (reason === 'processing') {
-                                            showProcessing();
-
-                                            $timeout(function () {
-                                                getVideoStatus();
-                                            }, 15000);
-                                        } else {
-                                            showError();
-                                        }
-                                    })
-                                    .finally(function () {
-                                        $scope.loading = false;
-                                    });
+                //get video info
+                videoStatus
+                    .get($routeParams.video_id)
+                    .then(function (status) {
+                        if(status.status !== 0){
+                            hideProcessing();
+                            hideError();
+                            $scope.videoStatus = status;
+                            $scope.$broadcast('//video-info:got', status);
+                            if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
+                                if ($scope.videoStatus.score < 1) {
+                                    $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
+                                }
+                                if ($scope.videoStatus.score > 30) {
+                                    showGoodScoreDimmer();
+                                } else {
+                                    showBadScoreDimmer();
+                                }
                             }
+                            hideProcessing();
+                            hideError();
+                        }else{
+                            showOffLineDimmer();
+                        }
+                    })
+                    .catch(function (reason) {
+                        if (reason === 'processing') {
+                            showProcessing();
+
+                            $timeout(function () {
+                                getVideoStatus();
+                            }, 15000);
                         } else {
                             showError();
                         }
+                    })
+                    .finally(function () {
+                        $scope.loading = false;
                     });
             }
 
@@ -352,41 +344,35 @@ angular
                 $scope.hideVideo = true;
             }
 
-            //video_id
-            api
-                .get('/service-proxy/buzz/video/info/:video_id'.replace(':video_id', $routeParams.video_id))
-                .then(function (videoInfo) {
-                    if (videoInfo.data && videoInfo.data.video_path) {
-                        if (videoInfo.data.status === 0) {
-                            showOffLineDimmer();
+            //video_id get video info
+            videoStatus.get($routeParams.video_id).then(function (status) {
+                if(status.status !== 0){
+                    hideProcessing();
+                    hideError();
+                    $scope.videoStatus = status;
+                    $scope.$broadcast('//video-info:got', status);
+                    if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
+                        if ($scope.videoStatus.score < 1) {
+                            $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
+                        }
+                        if ($scope.videoStatus.score > 30) {
+                            showGoodScoreDimmer();
                         } else {
-                            videoStatus.get(videoInfo.data.video_id).then(function (status) {
-                                hideProcessing();
-                                hideError();
-                                $scope.videoStatus = status;
-                                $scope.$broadcast('//video-info:got', status);
-                                if ($scope.videoStatus.score && parseFloat($scope.videoStatus.score)) {
-                                    if ($scope.videoStatus.score < 1) {
-                                        $scope.videoStatus.score = parseInt(parseFloat($scope.videoStatus.score) * 100);
-                                    }
-                                    if ($scope.videoStatus.score > 30) {
-                                        showGoodScoreDimmer();
-                                    } else {
-                                        showBadScoreDimmer();
-                                    }
-                                }
-                                hideProcessing();
-                                hideError();
-                            }).catch(function (reason) {
-                                if (reason === 'processing') {
-                                    showProcessing();
-                                } else {
-                                    showError();
-                                }
-                            });
+                            showBadScoreDimmer();
                         }
                     }
-                });
+                    hideProcessing();
+                    hideError();
+                }else{
+                    showOffLineDimmer();
+                }
+            }).catch(function (reason) {
+                if (reason === 'processing') {
+                    showProcessing();
+                } else {
+                    showError();
+                }
+            });
 
             $scope.shareToFriends = function () {
                 $scope.loading = true;
