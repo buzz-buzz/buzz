@@ -3,7 +3,6 @@ script(type="text/ng-template", id="video.html")
         .pasters label {position: relative; padding-left: 0;}
         .pasters label input {position: absolute; right: 0; bottom:-5px; width: 100%; text-align: center;}
         .pasters label img {max-width: 74px;}
-
     form.ui.form(ng-class="{'error': !!errorMessage, 'loading': uploading || loading}")
         include ../../partial/formMessage
         fieldset
@@ -29,21 +28,21 @@ script(type="text/ng-template", id="video.html")
                         span 秒
                 .ui.form(ng-controller="recipesCtrl")
                     .inline.fields.pasters
-                        .field
-                            h2.ui.header(style="background-color: transparent;") 贴纸：
-                        .field
+                        .field(style="max-width:19%")
+                            h2.ui.header(style="background-color: transparent;") 贴纸:
+                        .field(style="width:27%")
                             .checkbox
                                 label(for="sun_glasses")
                                     img(src="//resource.buzzbuzzenglish.com/image/png/recipe-sunglasses.png")
                                     input(type="checkbox", ng-model="formData.recipes.recipe_sun_glasses", ng-true-value="true", ng-false-value="false", id="sun_glasses", ng-click="checkRecipes($event)")
                                 
-                        .field
+                        .field(style="width:27%")
                             .checkbox
                                 label(for="moustache")
                                     img(src="//resource.buzzbuzzenglish.com/image/png/recipe-moustache.png")
                                     input(type="checkbox", ng-model="formData.recipes.recipe_moustache" ng-true-value="true", ng-false-value="false", id="moustache", ng-click="checkRecipes($event)")
                                 
-                        .field
+                        .field(style="width:27%")
                             .checkbox 
                                 label(for="nose")
                                     img(src="//resource.buzzbuzzenglish.com/image/png/recipe-nose.png")
